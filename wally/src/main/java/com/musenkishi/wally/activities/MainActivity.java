@@ -22,9 +22,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -136,14 +138,14 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        registerReceiver(fileReceiver, new IntentFilter(FileReceiver.GET_FILES));
-        registerReceiver(filtersChangeReceiver, new IntentFilter(FiltersChangeReceiver.FILTERS_CHANGED));
+        LocalBroadcastManager.getInstance(this).registerReceiver(fileReceiver, new IntentFilter(FileReceiver.GET_FILES));
+        LocalBroadcastManager.getInstance(this).registerReceiver(filtersChangeReceiver, new IntentFilter(FiltersChangeReceiver.FILTERS_CHANGED));
     }
 
     @Override
     public void onPause() {
-        unregisterReceiver(fileReceiver);
-        unregisterReceiver(filtersChangeReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(fileReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(filtersChangeReceiver);
         super.onPause();
     }
 

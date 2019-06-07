@@ -22,11 +22,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,8 +35,14 @@ import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.musenkishi.wally.R;
@@ -71,7 +76,7 @@ public class ImageZoomFragment extends DialogFragment {
     private int statusBarHeightCorrection;
     private int position;
 
-    public static ImageZoomFragment newInstance(Bitmap bitmap){
+    public static ImageZoomFragment newInstance(Bitmap bitmap) {
         ImageZoomFragment fragment = new ImageZoomFragment(bitmap);
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -85,7 +90,7 @@ public class ImageZoomFragment extends DialogFragment {
         return fragment;
     }
 
-    public static ImageZoomFragment newInstance(Uri fileUri){
+    public static ImageZoomFragment newInstance(Uri fileUri) {
         ImageZoomFragment fragment = new ImageZoomFragment(fileUri);
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -107,7 +112,7 @@ public class ImageZoomFragment extends DialogFragment {
         this.rect = rect;
     }
 
-    public ImageZoomFragment(Bitmap bitmap){
+    public ImageZoomFragment(Bitmap bitmap) {
         this.bitmap = bitmap;
     }
 
@@ -125,16 +130,16 @@ public class ImageZoomFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(STATE_BITMAP)){
+            if (savedInstanceState.containsKey(STATE_BITMAP)) {
                 bitmap = savedInstanceState.getParcelable(STATE_BITMAP);
             }
-            if (savedInstanceState.containsKey(STATE_TOOLBAR_VISIBILITY)){
+            if (savedInstanceState.containsKey(STATE_TOOLBAR_VISIBILITY)) {
                 toolBarVisibility = savedInstanceState.getInt(STATE_TOOLBAR_VISIBILITY, View.GONE);
             }
-            if (savedInstanceState.containsKey(STATE_URI_FILE)){
+            if (savedInstanceState.containsKey(STATE_URI_FILE)) {
                 fileUri = savedInstanceState.getParcelable(STATE_URI_FILE);
             }
-            if (savedInstanceState.containsKey(STATE_URI_CONTENT)){
+            if (savedInstanceState.containsKey(STATE_URI_CONTENT)) {
                 contentUri = savedInstanceState.getParcelable(STATE_URI_CONTENT);
             }
         }
@@ -176,19 +181,20 @@ public class ImageZoomFragment extends DialogFragment {
                 if (rect != null) {
                     animateIn(dialog);
                 }
-            } else if (fileUri != null){
+            } else if (fileUri != null) {
                 showLoader();
                 Glide.with(getActivity())
                         .load(fileUri)
                         .fitCenter()
-                        .listener(new RequestListener<Uri, GlideDrawable>() {
+                        .listener(new RequestListener<Drawable>() {
+
                             @Override
-                            public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                                 return false;
                             }
 
                             @Override
-                            public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                                 hideLoader();
                                 return false;
                             }
@@ -378,7 +384,7 @@ public class ImageZoomFragment extends DialogFragment {
                 }
             });
         }
-        if (contentUri != null){
+        if (contentUri != null) {
             Button deleteButton = (Button) toolBar.findViewById(R.id.toolbar_delete);
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -436,7 +442,7 @@ public class ImageZoomFragment extends DialogFragment {
         getActivity().getContentResolver().delete(contentUri, null, null);
 
         //Not for SavedImagesFragment, but for the others to know that they should update their content (heart/unheart tiles)
-        getActivity().sendBroadcast(new Intent(FileReceiver.GET_FILES));
+        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(FileReceiver.GET_FILES));
 
         dismiss();
     }

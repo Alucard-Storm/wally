@@ -61,7 +61,7 @@ public class WallyApplication extends Application {
     @Override
     public void onCreate(){
         super.onCreate();
-        Glide.get(this).register(GlideUrl.class, InputStream.class,
+        Glide.get(this).getRegistry().append(GlideUrl.class, InputStream.class,
                 new OkHttpUrlLoader.Factory(new OkHttpClient()));
         applicationContext = getApplicationContext();
         startCrashLoggingIfUserAccepted();

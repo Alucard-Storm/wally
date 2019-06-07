@@ -22,7 +22,7 @@
     <item android:id="@+id/action_share"
           android:title="@string/action_share"
           custom:showAsAction="ifRoom"
-          custom:actionProviderClass="android.support.v7.widget.ShareActionProvider" />
+          custom:actionProviderClass="androidx.appcompat.widget.ShareActionProvider" />
     <item android:id="@+id/action_open"
           android:title="@string/action_open"
           custom:showAsAction="never" />

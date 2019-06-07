@@ -20,6 +20,7 @@ import android.app.ActivityOptions;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -27,9 +28,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,7 +38,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.musenkishi.wally.R;
 import com.musenkishi.wally.activities.ImageDetailsActivity;
 import com.musenkishi.wally.activities.MainActivity;
@@ -69,7 +71,7 @@ import static com.musenkishi.wally.observers.FiltersChangeReceiver.OnFiltersChan
 
 /**
  * RandomImagesFragment is responsible for showing the user a randomized list of wallpapers.
- *
+ * <p>
  * Created by Freddie (Musenkishi) Lust-Hed on 2014-02-28
  */
 public class RandomImagesFragment extends GridFragment implements
@@ -120,7 +122,7 @@ public class RandomImagesFragment extends GridFragment implements
         setHasOptionsMenu(true);
         setActionBarColor(getResources().getColor(R.color.Actionbar_Random_Background));
         setupHandlers();
-        getActivity().sendBroadcast(new Intent(FileReceiver.GET_FILES));
+        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(FileReceiver.GET_FILES));
     }
 
     @Override
@@ -140,7 +142,7 @@ public class RandomImagesFragment extends GridFragment implements
             swipeClearLayout.setProgressBar(progressBar);
 
             setupAutoSizeGridView();
-            if (savedInstanceState != null && savedInstanceState.containsKey(STATE_IMAGES)){
+            if (savedInstanceState != null && savedInstanceState.containsKey(STATE_IMAGES)) {
                 Message msgObj = uiHandler.obtainMessage();
                 msgObj.what = MSG_IMAGES_REQUEST_CREATE;
                 msgObj.arg1 = 1;
@@ -331,10 +333,10 @@ public class RandomImagesFragment extends GridFragment implements
                             imagePage.imageId(),
                             getResources().getString(R.string.notification_title_image_saving));
 
-                    if (saveImageRequest.getDownloadID() != null && getActivity() instanceof MainActivity){
+                    if (saveImageRequest.getDownloadID() != null && getActivity() instanceof MainActivity) {
                         WallyApplication.getDownloadIDs().put(saveImageRequest.getDownloadID(), imagePage.imageId());
                     } else {
-                        getActivity().sendBroadcast(new Intent(FileReceiver.GET_FILES));
+                        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(FileReceiver.GET_FILES));
                     }
                 }
                 break;
@@ -422,12 +424,12 @@ public class RandomImagesFragment extends GridFragment implements
                 intent.putExtra(ImageDetailsActivity.INTENT_EXTRA_IMAGE, image);
 
                 if (thumbnailImageView != null && thumbnailImageView.getDrawable() != null
-                        && thumbnailImageView.getDrawable() instanceof GlideBitmapDrawable) {
-                    GlideBitmapDrawable glideBitmapDrawable = (GlideBitmapDrawable) thumbnailImageView.getDrawable();
+                        && thumbnailImageView.getDrawable() instanceof BitmapDrawable) {
+                    BitmapDrawable glideBitmapDrawable = (BitmapDrawable) thumbnailImageView.getDrawable();
                     thumb = glideBitmapDrawable.getBitmap();
                 } else if (thumbnailImageView != null && thumbnailImageView.getDrawable() != null
                         && thumbnailImageView.getDrawable() instanceof TransitionDrawable) {
-                    GlideBitmapDrawable squaringDrawable = (GlideBitmapDrawable) ((TransitionDrawable) thumbnailImageView.getDrawable()).getDrawable(1);
+                    BitmapDrawable squaringDrawable = (BitmapDrawable) ((TransitionDrawable) thumbnailImageView.getDrawable()).getDrawable(1);
                     thumb = squaringDrawable.getBitmap();
                 }
                 WallyApplication.setBitmapThumb(thumb);
@@ -437,7 +439,7 @@ public class RandomImagesFragment extends GridFragment implements
                     String transitionNameImage = getString(R.string.transition_image_details);
                     ActivityOptionsCompat options =
                             ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-                                    android.support.v4.util.Pair.create(view.findViewById(R.id.thumb_image_view), transitionNameImage)
+                                    androidx.core.util.Pair.create(view.findViewById(R.id.thumb_image_view), transitionNameImage)
                             );
                     ActivityCompat.startActivityForResult(getActivity(), intent, ImageDetailsActivity.REQUEST_EXTRA_TAG, options.toBundle());
 

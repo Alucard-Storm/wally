@@ -29,8 +29,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.view.ActionMode;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.view.ActionMode;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -403,7 +405,7 @@ public class SavedImagesFragment extends GridFragment implements Handler.Callbac
                         }
                         mode.finish();
                         getImages(0, null);
-                        getActivity().sendBroadcast(new Intent(FileReceiver.GET_FILES));
+                        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(FileReceiver.GET_FILES));
                     }
                 });
                 materialDialogFragment.setNegativeButton(R.string.dialog_delete_negative, new DialogInterface.OnClickListener() {

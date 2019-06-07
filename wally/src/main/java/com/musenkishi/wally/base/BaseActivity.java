@@ -25,7 +25,6 @@ import android.app.ActivityManager;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -39,9 +38,9 @@ import android.graphics.drawable.Drawable;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.util.Log;
@@ -56,7 +55,6 @@ import android.widget.ImageView;
 import com.musenkishi.wally.BuildConfig;
 import com.musenkishi.wally.R;
 import com.musenkishi.wally.dataprovider.SharedPreferencesDataProvider;
-import com.musenkishi.wally.fragments.MaterialDialogFragment;
 import com.musenkishi.wally.util.TypefaceSpan;
 
 import java.lang.reflect.Field;
@@ -66,7 +64,7 @@ import java.lang.reflect.Method;
  * A base class where you can put logic that is needed in all activities.
  * Created by Musenkishi on 2014-03-07 14:54.
  */
-public abstract class BaseActivity extends ActionBarActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     private static final int FADE_CROSSOVER_TIME_MILLIS = 300;
 
@@ -94,7 +92,7 @@ public abstract class BaseActivity extends ActionBarActivity {
             setTaskDescription(new ActivityManager.TaskDescription(title, bitmap, primaryColor));
         }
 
-        if (WallyApplication.shouldShowCrashLoggingPermission()){
+        if (WallyApplication.shouldShowCrashLoggingPermission()) {
             showCrashLoggingPermissionDialog();
             WallyApplication.setShouldShowCrashLoggingPermission(false);
         }
@@ -161,9 +159,9 @@ public abstract class BaseActivity extends ActionBarActivity {
         permissionDialogFragment.setNegativeButton(R.string.dialog_crashlogging_negative, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {*/
-                WallyApplication.getDataProviderInstance()
-                        .getSharedPreferencesDataProviderInstance()
-                        .setUserApprovedCrashLogging(SharedPreferencesDataProvider.CRASH_LOGGING_NOT_APPROVED);
+        WallyApplication.getDataProviderInstance()
+                .getSharedPreferencesDataProviderInstance()
+                .setUserApprovedCrashLogging(SharedPreferencesDataProvider.CRASH_LOGGING_NOT_APPROVED);
                 /*
                 permissionDialogFragment.dismiss();
             }
@@ -270,7 +268,7 @@ public abstract class BaseActivity extends ActionBarActivity {
 
         viewParams.topMargin = heartCoords[1];
         viewParams.height = originalView.getHeight();
-        viewParams.width= originalView.getWidth();
+        viewParams.width = originalView.getWidth();
         viewParams.gravity = Gravity.LEFT;
         viewParams.leftMargin = heartCoords[0];
         view.setLayoutParams(viewParams);

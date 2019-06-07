@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
@@ -32,12 +33,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.graphics.Palette;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -59,7 +54,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.palette.graphics.Palette;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.musenkishi.paletteloader.PaletteRequest;
 import com.musenkishi.wally.R;
 import com.musenkishi.wally.activities.ImageDetailsActivity;
@@ -157,7 +159,7 @@ public class SearchFragment extends GridFragment implements
         setHasOptionsMenu(true);
         setActionBarColor(getResources().getColor(R.color.Actionbar_Search_Background));
         setupHandlers();
-        getActivity().sendBroadcast(new Intent(FileReceiver.GET_FILES));
+        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(FileReceiver.GET_FILES));
     }
 
     @Override
@@ -365,7 +367,7 @@ public class SearchFragment extends GridFragment implements
     public void onResume() {
         super.onResume();
         HashMap<String, Object> messages = WallyApplication.readMessages(TAG);
-        if (!messages.isEmpty()){
+        if (!messages.isEmpty()) {
             String tagName = (String) messages.get(EXTRA_MESSAGE_TAG);
             if (tagName != null) {
                 searchTag(tagName);
@@ -589,7 +591,7 @@ public class SearchFragment extends GridFragment implements
                     if (saveImageRequest.getDownloadID() != null && getActivity() instanceof MainActivity) {
                         WallyApplication.getDownloadIDs().put(saveImageRequest.getDownloadID(), imagePage.imageId());
                     } else {
-                        getActivity().sendBroadcast(new Intent(FileReceiver.GET_FILES));
+                        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(FileReceiver.GET_FILES));
                     }
                 }
                 break;
@@ -745,12 +747,12 @@ public class SearchFragment extends GridFragment implements
                 intent.putExtra(ImageDetailsActivity.INTENT_EXTRA_IMAGE, image);
 
                 if (thumbnailImageView != null && thumbnailImageView.getDrawable() != null
-                        && thumbnailImageView.getDrawable() instanceof GlideBitmapDrawable) {
-                    GlideBitmapDrawable glideBitmapDrawable = (GlideBitmapDrawable) thumbnailImageView.getDrawable();
+                        && thumbnailImageView.getDrawable() instanceof BitmapDrawable) {
+                    BitmapDrawable glideBitmapDrawable = (BitmapDrawable) thumbnailImageView.getDrawable();
                     thumb = glideBitmapDrawable.getBitmap();
                 } else if (thumbnailImageView != null && thumbnailImageView.getDrawable() != null
                         && thumbnailImageView.getDrawable() instanceof TransitionDrawable) {
-                    GlideBitmapDrawable squaringDrawable = (GlideBitmapDrawable) ((TransitionDrawable) thumbnailImageView.getDrawable()).getDrawable(1);
+                    BitmapDrawable squaringDrawable = (BitmapDrawable) ((TransitionDrawable) thumbnailImageView.getDrawable()).getDrawable(1);
                     thumb = squaringDrawable.getBitmap();
                 }
                 WallyApplication.setBitmapThumb(thumb);
@@ -759,7 +761,7 @@ public class SearchFragment extends GridFragment implements
                     String transitionNameImage = getString(R.string.transition_image_details);
                     ActivityOptionsCompat options =
                             ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-                                    android.support.v4.util.Pair.create(view.findViewById(R.id.thumb_image_view), transitionNameImage)
+                                    androidx.core.util.Pair.create(view.findViewById(R.id.thumb_image_view), transitionNameImage)
                             );
                     ActivityCompat.startActivityForResult(getActivity(), intent, ImageDetailsActivity.REQUEST_EXTRA_TAG, options.toBundle());
 
@@ -781,7 +783,7 @@ public class SearchFragment extends GridFragment implements
                 && quickReturnView != null
                 && quickReturnBackground != null) {
 
-            if (!tag.startsWith("#")){
+            if (!tag.startsWith("#")) {
                 tag = "#" + tag;
             }
 

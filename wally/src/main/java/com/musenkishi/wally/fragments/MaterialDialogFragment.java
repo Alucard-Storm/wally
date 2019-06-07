@@ -22,7 +22,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import androidx.fragment.app.DialogFragment;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewStub;
@@ -110,7 +110,7 @@ public class MaterialDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         if (getActivity() != null) {
-            final Dialog dialog = new Dialog(getActivity(), android.support.v7.appcompat.R.style.Base_Theme_AppCompat_Light_Dialog );
+            final Dialog dialog = new Dialog(getActivity(), R.style.Base_Theme_AppCompat_Light_Dialog );
 //                    android.R.style.Theme_DeviceDefault_Light_Dialog);
             dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
             dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,

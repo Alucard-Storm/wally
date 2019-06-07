@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -32,10 +33,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.graphics.Palette;
-import android.support.v7.widget.ShareActionProvider;
-import android.support.v7.widget.Toolbar;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,9 +48,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.ShareActionProvider;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuItemCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.palette.graphics.Palette;
+
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.musenkishi.paletteloader.PaletteLoader;
@@ -162,7 +166,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
 
         if (Intent.ACTION_VIEW.equals(action)) {
             pageUri = Uri.parse(intent.getDataString());
-            if ("wally".equalsIgnoreCase(pageUri.getScheme())){
+            if ("wally".equalsIgnoreCase(pageUri.getScheme())) {
                 pageUri = pageUri.buildUpon().scheme("http").build();
             }
         }
@@ -170,7 +174,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         setupViews();
         setupHandlers();
 
-        Size size = new Size(16,9);
+        Size size = new Size(16, 9);
 
         if (intent.hasExtra(INTENT_EXTRA_IMAGE)) {
             final Image image = intent.getParcelableExtra(INTENT_EXTRA_IMAGE);
@@ -199,7 +203,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
 
         if (savedInstanceState == null) {
             getPage(pageUri.toString());
-        } else if (savedInstanceState.containsKey(STATE_IMAGE_PAGE)){
+        } else if (savedInstanceState.containsKey(STATE_IMAGE_PAGE)) {
             imagePage = savedInstanceState.getParcelable(STATE_IMAGE_PAGE);
         }
 
@@ -250,10 +254,10 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
             });
             valueAnimator.start();
         } else {
-            photoLayoutHolder.setPadding(0, 0, 0, 0 );
+            photoLayoutHolder.setPadding(0, 0, 0, 0);
         }
 
-        scrollView.setPadding(0, 0, 0, -fabPadding );
+        scrollView.setPadding(0, 0, 0, -fabPadding);
         specsLayout.setPadding(0, 0, 0, fabPadding);
 
         ValueAnimator valueAnimator = ValueAnimator.ofInt(detailsViewGroup.getPaddingTop(), size.getHeight());
@@ -326,7 +330,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
 
     @Override
     protected void onDestroy() {
-        Glide.clear(photoView);
+        Glide.with(getApplicationContext()).clear(photoView);
         backgroundHandler.removeCallbacksAndMessages(null);
         uiHandler.removeCallbacksAndMessages(null);
         backgroundHandler.getLooper().quit();
@@ -406,7 +410,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                     photoViewAttacher.getDrawMatrix().getValues(values);
                     float imageHeight = imageSize.getHeight();
 
-                    float diff = imageHeight/displayHeight;
+                    float diff = imageHeight / displayHeight;
 
                     if (y > oldy) {
                         diff = -diff;
@@ -495,7 +499,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         }
     }
 
-    private void setColors(Palette palette){
+    private void setColors(Palette palette) {
         this.palette = palette;
         hideLoader();
 
@@ -537,6 +541,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
 
     /**
      * Animations animations animations.
+     *
      * @param visibility if VISIBLE, expands toolbar.
      */
     private void animateToolbar(int visibility) {
@@ -636,7 +641,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                 buttonSave.setText(R.string.saved);
                 buttonSave.setAlpha(0.5f);
             } else {
-                if (!buttonSave.isClickable()){
+                if (!buttonSave.isClickable()) {
                     buttonSave.setClickable(true);
                     buttonSave.setText(R.string.action_save);
                 }
@@ -666,7 +671,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                         pageUri.getLastPathSegment(),
                         getResources().getString(R.string.notification_title_image_saving));
 
-        if (saveImageRequest.getDownloadID() != null){
+        if (saveImageRequest.getDownloadID() != null) {
             WallyApplication.getDownloadIDs().put(saveImageRequest.getDownloadID(), pageUri.getLastPathSegment());
         } else {
             handleSavedImageData(saveImageRequest.getFilePath());
@@ -676,7 +681,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
     @Override
     protected void handleReceivedIntent(Context context, Intent intent) {
         long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0L);
-        if (WallyApplication.getDownloadIDs().containsKey(id)){
+        if (WallyApplication.getDownloadIDs().containsKey(id)) {
             WallyApplication.getDownloadIDs().remove(id);
             updateSaveButton();
             if (palette != null && palette.getVibrantSwatch() != null) {
@@ -706,7 +711,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
 
                         @Override
                         public void onScanCompleted(String path, Uri uri) {
-                            getApplication().sendBroadcast(new Intent(FileReceiver.GET_FILES));
+                            LocalBroadcastManager.getInstance(getApplication()).sendBroadcast(new Intent(FileReceiver.GET_FILES));
                         }
                     }
             );
@@ -735,7 +740,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
 
         int animationDuration = 400;
 
-        if (isInFullscreen()){
+        if (isInFullscreen()) {
             scrollView.smoothScrollTo(0, (Integer) scrollView.getTag());
             if (photoViewAttacher != null) {
                 photoViewAttacher.cleanup();
@@ -800,7 +805,6 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         }
 
 
-
         if (photoLayoutHolder.getTranslationY() != 0.0f) {
             photoLayoutHolder.animate()
                     .translationY(0.0f)
@@ -830,7 +834,9 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         });
         valueAnimator.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animator) {}
+            public void onAnimationStart(Animator animator) {
+            }
+
             @Override
             public void onAnimationEnd(Animator animator) {
                 if (photoViewAttacher != null) {
@@ -842,10 +848,14 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                     });
                 }
             }
+
             @Override
-            public void onAnimationCancel(Animator animator) {}
+            public void onAnimationCancel(Animator animator) {
+            }
+
             @Override
-            public void onAnimationRepeat(Animator animator) {}
+            public void onAnimationRepeat(Animator animator) {
+            }
         });
         valueAnimator.start();
 
@@ -864,7 +874,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         Display thisDisplay = getWindowManager().getDefaultDisplay();
         int screenHeight = thisDisplay.getHeight();
         int emptySpace = detailsViewGroup.getPaddingTop();
-        int targetHeight = emptySpace - ((screenHeight/3)*2);
+        int targetHeight = emptySpace - ((screenHeight / 3) * 2);
         int navBarHeight = 0;
         if (imageSize.getHeight() > (screenHeight - navBarHeight)) {
             Message msgObj = uiHandler.obtainMessage();
@@ -916,7 +926,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                     textViewSource.setText(imagePage.author().name());
                     if (imagePage.author().page() != Uri.EMPTY) {
                         textViewSource.setTextColor(getResources()
-                                        .getColor(R.color.Holo_Blue_Dark)
+                                .getColor(R.color.Holo_Blue_Dark)
                         );
                         textViewSource.setTag(imagePage.author());
                         textViewSource.setOnClickListener(new View.OnClickListener() {
@@ -966,32 +976,25 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                             .load(imageUrl)
                             .placeholder(photoView.getDrawable())
                             .fitCenter()
-                            .listener(new RequestListener<String, GlideDrawable>() {
+                            .listener(new RequestListener<Drawable>() {
+
                                 @Override
-                                public boolean onException(Exception e,
-                                                           String model,
-                                                           Target<GlideDrawable> target,
-                                                           boolean isFirstResource) {
+                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                                     hideLoader();
                                     //TODO: maybe show a retry button?
                                     return false;
                                 }
 
                                 @Override
-                                public boolean onResourceReady(GlideDrawable resource,
-                                                               String model,
-                                                               Target<GlideDrawable> target,
-                                                               boolean isFromMemoryCache,
-                                                               boolean isFirstResource) {
-
+                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                                     photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
                                     renderTags(
-                                            ((GlideBitmapDrawable) resource.getCurrent())
+                                            ((BitmapDrawable) resource.getCurrent())
                                                     .getBitmap()
                                     );
                                     renderColors(
-                                            ((GlideBitmapDrawable) resource.getCurrent())
+                                            ((BitmapDrawable) resource.getCurrent())
                                                     .getBitmap()
                                     );
                                     photoView.setOnClickListener(new View.OnClickListener() {

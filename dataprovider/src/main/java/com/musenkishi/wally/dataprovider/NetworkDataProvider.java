@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class NetworkDataProvider {
 
-    public static final String WALLHAVEN_BASE_URL = "http://alpha.wallhaven.cc/";
+    public static final String WALLHAVEN_BASE_URL = "https://wallhaven.cc/";
     public static final String PATH_TOPLIST = "toplist";
     public static final String PATH_RANDOM = "random";
     public static final String PATH_SEARCH = "search";
@@ -61,7 +61,7 @@ public class NetworkDataProvider {
         }
 
         Uri.Builder builder = new Uri.Builder();
-        builder.scheme("http").authority("alpha.wallhaven.cc")
+        builder.scheme("https").authority("wallhaven.cc")
                 .appendEncodedPath("search")
                 .appendQueryParameter(FilterBoardsKeys.PARAMETER_KEY, filterGroupsStructure.getBoardsFilter())
                 .appendQueryParameter(FilterResolutionKeys.PARAMETER_KEY, filterGroupsStructure.getResolutionFilter().getValue())

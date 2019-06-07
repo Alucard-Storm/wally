@@ -16,7 +16,10 @@
 
 package com.musenkishi.wally.dataprovider.okhttp;
 
+import androidx.annotation.NonNull;
+
 import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.data.DataFetcher;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.squareup.okhttp.OkHttpClient;
@@ -40,16 +43,21 @@ public class OkHttpStreamFetcher implements DataFetcher<InputStream> {
     }
 
     @Override
-    public InputStream loadData(Priority priority) throws Exception {
+    public void loadData(@NonNull Priority priority, @NonNull DataCallback<? super InputStream> callback) {
         request = new Request.Builder()
                 .url(url.toString())
                 .build();
 
-        stream = client.newCall(request)
-                .execute()
-                .body()
-                .byteStream();
-        return stream;
+        try {
+            stream = client.newCall(request)
+                    .execute()
+                    .body()
+                    .byteStream();
+
+            callback.onDataReady(stream);
+        } catch (IOException e) {
+            callback.onLoadFailed(e);
+        }
     }
 
     @Override
@@ -64,9 +72,16 @@ public class OkHttpStreamFetcher implements DataFetcher<InputStream> {
         }
     }
 
+    @NonNull
     @Override
-    public String getId() {
-        return url.toString();
+    public Class<InputStream> getDataClass() {
+        return InputStream.class;
+    }
+
+    @NonNull
+    @Override
+    public DataSource getDataSource() {
+        return DataSource.REMOTE;
     }
 
     @Override

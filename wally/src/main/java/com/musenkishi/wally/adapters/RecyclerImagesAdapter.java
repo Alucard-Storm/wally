@@ -20,9 +20,10 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ClipDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,9 +32,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.musenkishi.paletteloader.PaletteLoader;
@@ -98,14 +102,17 @@ public class RecyclerImagesAdapter extends RecyclerView.Adapter<RecyclerImagesAd
             viewHolder.bottomBar.setBackgroundColor(viewHolder.bottomBar.getContext().getResources().getColor(R.color.Transparent));
             viewHolder.textViewResolution.setTextColor(viewHolder.bottomBar.getContext().getResources().getColor(R.color.Thumb_Text));
 
-            RequestListener<String, GlideDrawable> glideDrawableRequestListener = new RequestListener<String, GlideDrawable>() {
+            RequestListener<Drawable> glideDrawableRequestListener = new RequestListener<Drawable>() {
                 @Override
-                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                     return false;
                 }
+
                 @Override
-                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                    Bitmap bitmap = ((GlideBitmapDrawable) resource).getBitmap();
+                public boolean onResourceReady(Drawable resource, Object modelObj, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    Bitmap bitmap = ((BitmapDrawable) resource).getBitmap();
+                    String model = (String) modelObj;
+
                     if (bitmap != null) {
                         Context context = viewHolder.bottomBar.getContext();
                         PaletteLoader.with(context, model)

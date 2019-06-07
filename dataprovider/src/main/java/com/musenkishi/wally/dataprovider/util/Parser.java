@@ -161,7 +161,7 @@ public class Parser {
 
             if (imagePath.getScheme() == null || !imagePath.getScheme().equalsIgnoreCase("http")
                     || !imagePath.getScheme().equalsIgnoreCase("https")) {
-                imagePath = imagePath.buildUpon().scheme("http").build();
+                imagePath = imagePath.buildUpon().scheme("https").build();
             }
         }
 

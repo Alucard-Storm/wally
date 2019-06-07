@@ -20,7 +20,7 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 
 import com.musenkishi.wally.dataprovider.models.DataProviderError;
 import com.musenkishi.wally.dataprovider.models.SaveImageRequest;
@@ -220,7 +220,7 @@ public class DataProvider {
 
             DownloadManager.Request request = new DownloadManager.Request(path);
             request.setTitle(notificationTitle);
-            request.setVisibleInDownloadsUi(false);
+            request.setVisibleInDownloadsUi(true);
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
             request.allowScanningByMediaScanner();
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "/Wally/" + filename + type);
