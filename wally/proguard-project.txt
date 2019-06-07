@@ -17,7 +17,7 @@
 #}
 
 -keep class android.support.v7.widget.ShareActionProvider { *; }
--keep public class * extends android.app,backup.BackupAgent
+#-keep public class * extends android.app,backup.BackupAgent
 -keep public class org.jsoup.**
 -dontwarn com.squareup.okhttp.**
 -dontwarn com.squareup.okio.**
@@ -43,6 +43,6 @@
 -keep public class android.support.v7.internal.widget.** { *; }
 -keep public class android.support.v7.internal.view.menu.** { *; }
 
--keep public class * extends android.support.v4.view.ActionProvider {
+-keep public class * extends androidx.core.view.ActionProvider {
     public <init>(android.content.Context);
 }
