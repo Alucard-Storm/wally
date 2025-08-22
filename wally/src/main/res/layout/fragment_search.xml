@@ -59,7 +59,6 @@
         >
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/quick_return_cardview"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             custom:cardElevation="0dp"

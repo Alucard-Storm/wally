@@ -18,13 +18,9 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-    android:drawable="@drawable/ic_action_heart_empty"
-    android:id="@+id/hear_animation_bottom"
-    />
+    android:drawable="@drawable/ic_action_heart_empty" />
 
     <item
-        android:drawable="@drawable/clip_heart_full"
-        android:id="@+id/hear_animation_clip"
-        />
+        android:drawable="@drawable/clip_heart_full" />
 
 </layer-list>

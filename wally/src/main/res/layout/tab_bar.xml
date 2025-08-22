@@ -27,8 +27,7 @@
                                        wally:tabBarSize="2dp">
 
     <com.musenkishi.wally.views.TabView
-            android:id="@+id/tab_toplist"
-            android:layout_width="wrap_content"
+        android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:background="@drawable/default_selector"
@@ -38,7 +37,6 @@
             />
 
     <com.musenkishi.wally.views.TabView
-        android:id="@+id/tab_latest"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
@@ -49,8 +47,7 @@
         />
 
     <com.musenkishi.wally.views.TabView
-            android:id="@+id/tab_search"
-            android:layout_width="wrap_content"
+        android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:background="@drawable/default_selector"
@@ -60,8 +57,7 @@
             />
 
     <com.musenkishi.wally.views.TabView
-            android:id="@+id/tab_random"
-            android:layout_width="wrap_content"
+        android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:background="@drawable/default_selector"
@@ -71,8 +67,7 @@
             />
 
     <com.musenkishi.wally.views.TabView
-            android:id="@+id/tab_saved"
-            android:layout_width="wrap_content"
+        android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:background="@drawable/default_selector"

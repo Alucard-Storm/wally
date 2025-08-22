@@ -70,15 +70,8 @@
         <item name="android:indeterminateDrawable">@drawable/custom_progress_circle_light</item>
     </style>
 
-    <style name="CustomOverflow" parent="@android:style/Widget.Holo.ActionButton.Overflow">
-        <item name="android:src">@drawable/ic_action_overflow</item>
-        <item name="android:background">@drawable/default_selector</item>
-    </style>
-
     <style name="Button"/>
-    <style name="Button.Dialog">
-        <item name="android:background">@drawable/default_selector</item>
-    </style>
+
     <style name="Button.Material"/>
     <style name="Button.Material.Flat">
         <item name="android:background">@drawable/default_selector</item>

@@ -18,7 +18,6 @@
 <resources>
 
     <integer name="default_animation_speed">300</integer>
-    <integer name="cell_grow_speed">200</integer>
     <integer name="custom_progressbar_animation_duration">1000</integer>
 
 </resources>

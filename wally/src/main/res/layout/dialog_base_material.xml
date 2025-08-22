@@ -69,7 +69,6 @@
 
 
         <LinearLayout
-            android:id="@+id/dialog_buttons_layout"
             android:layout_width="match_parent"
             android:layout_height="68dp"
             android:layout_weight="0"

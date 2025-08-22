@@ -31,7 +31,6 @@
         android:orientation="horizontal">
 
         <LinearLayout
-            android:id="@+id/filter_layout_boards"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
@@ -64,7 +63,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/filter_layout_maturity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
@@ -106,7 +104,6 @@
         android:gravity="center_vertical">
 
         <LinearLayout
-            android:id="@+id/filter_layout_ratio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.6"
@@ -130,7 +127,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/filter_layout_resolution"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -162,7 +158,6 @@
         android:paddingTop="16dp">
 
         <TextView
-            android:id="@+id/filter_title_api_key"
             style="@style/Material.Header.SubHeader"
             android:textColor="@color/Filter.Section.Title"
             android:text="Wallhaven API key (required for NSFW)" />

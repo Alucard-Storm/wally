@@ -16,30 +16,19 @@
 
 <resources>
     <dimen name="app_bar_height">56dp</dimen>
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-
-    <dimen name="activity_horizontal_grid_margin">14dp</dimen>
-    <dimen name="activity_vertical_grid_margin">14dp</dimen>
 
     <dimen name="activity_details_scrollview_side_padding">0dp</dimen>
-
-    <dimen name="navigation_drawer_width">240dp</dimen>
 
     <dimen name="eight_dp">8dp</dimen>
 
     <dimen name="default_gap">16dp</dimen>
     <dimen name="default_press_size">48dp</dimen>
     <dimen name="default_height">48dp</dimen>
-    <dimen name="thumb_cell_toolbar_height">32dp</dimen>
     <dimen name="thumb_cell_height">250dp</dimen>
     <dimen name="thumb_cell_width">250dp</dimen>
-    <dimen name="navigation_drawer_padding_top">96dp</dimen>
-    <dimen name="colors_selection_bar_height">2dp</dimen>
 
     <dimen name="details_toolbar_height">68dp</dimen>
 
-    <dimen name="tab_bar_width">48dp</dimen>
     <dimen name="action_bar_item_image_size">32dp</dimen>
     <dimen name="tab_view_text_width_portrait">0dp</dimen>
     <dimen name="tab_view_text_width_landscape">96dp</dimen>

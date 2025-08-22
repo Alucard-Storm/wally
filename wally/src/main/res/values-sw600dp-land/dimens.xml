@@ -18,6 +18,5 @@
 <resources>
 
     <dimen name="app_bar_height">64dp</dimen>
-    <dimen name="image_details_specs_width">320dp</dimen>
 
 </resources>
