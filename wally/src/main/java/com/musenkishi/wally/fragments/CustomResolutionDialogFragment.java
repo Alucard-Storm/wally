@@ -83,8 +83,8 @@ public class CustomResolutionDialogFragment extends MaterialDialogFragment imple
                 if (getActivity() != null) {
                     Size size = getRealScreenDimensions();
 
-                    editTextHeight.setText(Integer.toString(size.getHeight()));
-                    editTextWidth.setText(Integer.toString(size.getWidth()));
+                    editTextHeight.getEditText().setText(Integer.toString(size.getHeight()));
+                    editTextWidth.getEditText().setText(Integer.toString(size.getWidth()));
                 }
                 break;
 
@@ -138,12 +138,12 @@ public class CustomResolutionDialogFragment extends MaterialDialogFragment imple
         int width;
         int height;
         try {
-            width = Integer.parseInt(editTextWidth.getTextString());
+            width = Integer.parseInt(editTextWidth.getEditText().getText().toString());
         } catch (NumberFormatException e) {
             width = 0;
         }
         try {
-            height = Integer.parseInt(editTextHeight.getTextString());
+            height = Integer.parseInt(editTextHeight.getEditText().getText().toString());
         } catch (NumberFormatException e) {
             height = 0;
         }

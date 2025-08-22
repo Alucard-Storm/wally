@@ -17,7 +17,7 @@
 apply plugin: 'com.android.library'
 
 android {
-	compileSdkVersion 34
+	compileSdkVersion 36
 	namespace "com.musenkishi.wallbase.models"
 	defaultConfig {
 		minSdkVersion 21
@@ -28,6 +28,12 @@ android {
 			minifyEnabled false
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
 		}
+        publicAlpha {
+            initWith release
+        }
+        publicBeta {
+            initWith release
+        }
 	}
 	productFlavors {
 	}
@@ -40,6 +46,6 @@ android {
 
 dependencies {
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
-	api 'com.github.frankiesardo:auto-parcel:0.2'
-	annotationProcessor 'com.github.frankiesardo:auto-parcel-processor:0.2'
+	api 'com.github.frankiesardo:auto-parcel:0.3.1'
+	annotationProcessor 'com.github.frankiesardo:auto-parcel-processor:0.3.1'
 }

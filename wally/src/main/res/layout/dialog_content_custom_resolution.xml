@@ -33,8 +33,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
-        custom:fletFloatingHint="Width"
-        custom:fletInputType="number"
         />
 
     <TextView
@@ -51,8 +49,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
-        custom:fletFloatingHint="Height"
-        custom:fletInputType="number"
         />
 
 </LinearLayout>

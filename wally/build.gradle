@@ -37,7 +37,7 @@ android {
 			             'META-INF/LGPL2.1']
 		}
 	}
-	compileSdkVersion 34
+	compileSdkVersion 36
 	namespace "com.musenkishi.wally"
 
 	def Properties versionProps = new Properties()
@@ -93,21 +93,21 @@ android {
 }
 
 dependencies {
-	implementation 'androidx.annotation:annotation:1.1.0'
-	implementation 'org.apache.commons:commons-collections4:4.0'
+	implementation 'androidx.annotation:annotation:1.9.1'
+	implementation 'org.apache.commons:commons-collections4:4.5.0'
 	implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 	implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
 	implementation 'androidx.palette:palette:1.0.0'
-	implementation 'androidx.recyclerview:recyclerview:1.0.0'
+	implementation 'androidx.recyclerview:recyclerview:1.4.0'
 	implementation 'androidx.cardview:cardview:1.0.0'
-	implementation 'androidx.appcompat:appcompat:1.0.2'
-	implementation 'com.github.chrisbanes.photoview:library:1.2.3'
-	implementation('de.psdev.licensesdialog:licensesdialog:+') {
+	implementation 'androidx.appcompat:appcompat:1.7.1'
+	implementation 'com.github.chrisbanes.photoview:library:1.2.4'
+	implementation('de.psdev.licensesdialog:licensesdialog:2.2.0') {
 		exclude module: 'support-v4'
 	}
 	implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 	implementation project(':dataprovider')
-	implementation 'com.google.android.apps.muzei:muzei-api:1.0'
-	implementation 'com.wrapp.floatlabelededittext:library:0.0.3'
+	implementation 'com.google.android.apps.muzei:muzei-api:3.4.2'
+	implementation 'com.wrapp.floatlabelededittext:library:0.0.6'
 	implementation 'com.github.Musenkishi:PaletteLoader:1.1.0'
 }
