@@ -246,6 +246,16 @@ public class NetworkDataProvider {
         getData(url, apiKey, onDataReceivedListener);
     }
 
+    public void getDataApiForWallpaper(String wallpaperId, String apiKey, OnDataReceivedListener onDataReceivedListener) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("https").authority("wallhaven.cc")
+                .appendEncodedPath("api/v1/w")
+                .appendEncodedPath(wallpaperId);
+        
+        String url = builder.build().toString();
+        getData(url, apiKey, onDataReceivedListener);
+    }
+
     public interface OnDataReceivedListener {
         void onData(String data, String url);
 

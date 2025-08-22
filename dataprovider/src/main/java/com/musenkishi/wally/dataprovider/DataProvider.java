@@ -81,6 +81,15 @@ public class DataProvider {
         String apiKey = sharedPreferencesDataProvider.getWallhavenApiKey();
         boolean wantsNsfw = sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).length() >= 3 && sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).charAt(2) == '1';
         if (wantsNsfw) {
+            // Check if API key is available when NSFW is enabled
+            if (apiKey == null || apiKey.length() == 0) {
+                if (onImagesReceivedListener != null) {
+                    DataProviderError apiKeyError = new DataProviderError(DataProviderError.Type.LOCAL, 401, "API key required for NSFW content");
+                    onImagesReceivedListener.onError(apiKeyError);
+                }
+                return;
+            }
+            
             new NetworkDataProvider().getDataApi(path, query, color, index, filterGroupsStructure, apiKey, new OnDataReceivedListener() {
                 @Override
                 public void onData(String data, String url) {
@@ -122,6 +131,12 @@ public class DataProvider {
         boolean wantsNsfw = sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).length() >= 3 && sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).charAt(2) == '1';
         String data;
         if (wantsNsfw) {
+            // Check if API key is available when NSFW is enabled
+            if (apiKey == null || apiKey.length() == 0) {
+                // Return null to indicate failure - caller should handle this
+                return null;
+            }
+            
             Uri uri = new NetworkDataProvider().buildWallhavenApiUrl(index, path, filterGroupsStructure, null, null);
             data = new NetworkDataProvider().getDataSync(uri.toString(), apiKey);
             if (data != null) {
@@ -145,6 +160,15 @@ public class DataProvider {
         String apiKey = sharedPreferencesDataProvider.getWallhavenApiKey();
         boolean wantsNsfw = sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).length() >= 3 && sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).charAt(2) == '1';
         if (wantsNsfw) {
+            // Check if API key is available when NSFW is enabled
+            if (apiKey == null || apiKey.length() == 0) {
+                if (onImagesReceivedListener != null) {
+                    DataProviderError apiKeyError = new DataProviderError(DataProviderError.Type.LOCAL, 401, "API key required for NSFW content");
+                    onImagesReceivedListener.onError(apiKeyError);
+                }
+                return;
+            }
+            
             new NetworkDataProvider().getDataApi(path, index, filterGroupsStructure, apiKey, new OnDataReceivedListener() {
                 @Override
                 public void onData(String data, String url) {
@@ -192,11 +216,54 @@ public class DataProvider {
     }
 
     public ImagePage getPageDataSync(String imagePageUrl) {
+        String apiKey = sharedPreferencesDataProvider.getWallhavenApiKey();
+        boolean wantsNsfw = sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).length() >= 3 && sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).charAt(2) == '1';
+        
+        if (wantsNsfw && apiKey != null && apiKey.length() > 0) {
+            // Extract wallpaper ID from URL (e.g., "https://wallhaven.cc/w/123456" -> "123456")
+            String wallpaperId = extractWallpaperId(imagePageUrl);
+            if (wallpaperId != null) {
+                String data = new NetworkDataProvider().getDataSync("https://wallhaven.cc/api/v1/w/" + wallpaperId, apiKey);
+                if (data != null) {
+                    return parser.parseImagePageFromApi(data, imagePageUrl);
+                }
+            }
+        }
+        
+        // Fallback to regular HTML parsing
         String data = new NetworkDataProvider().getDataSync(imagePageUrl);
         return parser.parseImagePage(data, imagePageUrl);
     }
 
     public void getPageData(String imagePageUrl, final OnPageReceivedListener onPageReceivedListener) {
+        String apiKey = sharedPreferencesDataProvider.getWallhavenApiKey();
+        boolean wantsNsfw = sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).length() >= 3 && sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).charAt(2) == '1';
+        
+        if (wantsNsfw && apiKey != null && apiKey.length() > 0) {
+            // Extract wallpaper ID from URL (e.g., "https://wallhaven.cc/w/123456" -> "123456")
+            String wallpaperId = extractWallpaperId(imagePageUrl);
+            if (wallpaperId != null) {
+                new NetworkDataProvider().getData("https://wallhaven.cc/api/v1/w/" + wallpaperId, apiKey, new OnDataReceivedListener() {
+                    @Override
+                    public void onData(String data, String url) {
+                        ImagePage imagePage = parser.parseImagePageFromApi(data, imagePageUrl);
+                        if (onPageReceivedListener != null) {
+                            onPageReceivedListener.onPageReceived(imagePage);
+                        }
+                    }
+
+                    @Override
+                    public void onError(DataProviderError error) {
+                        if (onPageReceivedListener != null) {
+                            onPageReceivedListener.onError(error);
+                        }
+                    }
+                });
+                return;
+            }
+        }
+        
+        // Fallback to regular HTML parsing
         new NetworkDataProvider().getData(imagePageUrl, new OnDataReceivedListener() {
             @Override
             public void onData(String data, String url) {
@@ -262,6 +329,120 @@ public class DataProvider {
 
     public Filter<String, String> getResolution(String tag) {
         return sharedPreferencesDataProvider.getResolution(tag);
+    }
+
+    private String extractWallpaperId(String imagePageUrl) {
+        try {
+            // Extract wallpaper ID from URL (e.g., "https://wallhaven.cc/w/123456" -> "123456")
+            if (imagePageUrl != null && imagePageUrl.contains("/w/")) {
+                String[] parts = imagePageUrl.split("/w/");
+                if (parts.length > 1) {
+                    String idPart = parts[1];
+                    // Remove any query parameters or fragments
+                    if (idPart.contains("?")) {
+                        idPart = idPart.split("\\?")[0];
+                    }
+                    if (idPart.contains("#")) {
+                        idPart = idPart.split("#")[0];
+                    }
+                    return idPart;
+                }
+            }
+        } catch (Exception e) {
+            // If extraction fails, return null to fallback to HTML parsing
+        }
+        return null;
+    }
+
+    /**
+     * Checks if NSFW is enabled and validates that an API key is available
+     * @return true if NSFW is enabled and API key is valid, false otherwise
+     */
+    public boolean isNsfwEnabledWithValidApiKey() {
+        boolean wantsNsfw = sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).length() >= 3 && 
+                           sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).charAt(2) == '1';
+        
+        if (!wantsNsfw) {
+            return false;
+        }
+        
+        String apiKey = sharedPreferencesDataProvider.getWallhavenApiKey();
+        return apiKey != null && apiKey.length() > 0;
+    }
+
+    /**
+     * Gets the current API key if available
+     * @return the API key or null if not set
+     */
+    public String getApiKey() {
+        return sharedPreferencesDataProvider.getWallhavenApiKey();
+    }
+
+    /**
+     * Checks if NSFW is enabled but API key is missing
+     * @return true if NSFW is enabled but no API key is set
+     */
+    public boolean isNsfwEnabledButMissingApiKey() {
+        boolean wantsNsfw = sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).length() >= 3 && 
+                           sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).charAt(2) == '1';
+        
+        if (!wantsNsfw) {
+            return false;
+        }
+        
+        String apiKey = sharedPreferencesDataProvider.getWallhavenApiKey();
+        return apiKey == null || apiKey.length() == 0;
+    }
+
+    /**
+     * Checks if the current filter settings require an API key
+     * @return true if NSFW is enabled (regardless of API key status)
+     */
+    public boolean isApiKeyRequired() {
+        return sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).length() >= 3 && 
+               sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).charAt(2) == '1';
+    }
+
+    /**
+     * Validates if the provided API key has a valid format
+     * @param apiKey the API key to validate
+     * @return true if the API key format is valid
+     */
+    public boolean isValidApiKeyFormat(String apiKey) {
+        if (apiKey == null || apiKey.length() == 0) {
+            return false;
+        }
+        // Wallhaven API keys are typically alphanumeric and at least 32 characters
+        return apiKey.matches("^[a-zA-Z0-9]{32,}$");
+    }
+
+    /**
+     * Gets the current API key validation status
+     * @return true if API key is present and has valid format
+     */
+    public boolean hasValidApiKey() {
+        String apiKey = getApiKey();
+        return isValidApiKeyFormat(apiKey);
+    }
+
+    /**
+     * Gets a user-friendly error message for API key issues
+     * @return error message or null if no issues
+     */
+    public String getApiKeyErrorMessage() {
+        if (!isApiKeyRequired()) {
+            return null; // No API key required
+        }
+        
+        if (isNsfwEnabledButMissingApiKey()) {
+            return "NSFW content requires a valid Wallhaven API key. Please add your API key in the filter settings.";
+        }
+        
+        if (!hasValidApiKey()) {
+            return "Invalid API key format. Please check your Wallhaven API key in the filter settings.";
+        }
+        
+        return null; // No issues
     }
 
     public SaveImageRequest downloadImageIfNeeded(Uri path, String filename, String notificationTitle) {

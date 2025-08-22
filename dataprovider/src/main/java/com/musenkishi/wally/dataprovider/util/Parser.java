@@ -193,6 +193,105 @@ public class Parser {
         return ImagePage.create(title, idUri, imagePath, resolution, category, rating, uploader, uploadDate, author, tags);
     }
 
+    public ImagePage parseImagePageFromApi(String data, String url) {
+        try {
+            JSONObject root = new JSONObject(data);
+            JSONObject wallpaper = root.getJSONObject("data");
+            
+            String id = wallpaper.optString("id");
+            String title = wallpaper.optString("title", "Unknown");
+            
+            // Get resolution
+            int width = wallpaper.optInt("width", 0);
+            int height = wallpaper.optInt("height", 0);
+            String resolution = width + " x " + height;
+            
+            // Get category
+            String category = "Unknown";
+            try {
+                category = wallpaper.optString("category", "Unknown");
+            } catch (Exception e) {
+                reportCrash("parseImagePageFromApi category", e);
+            }
+            
+            // Get rating
+            String rating = "Unknown";
+            try {
+                String purity = wallpaper.optString("purity", "");
+                if ("sfw".equals(purity)) {
+                    rating = "SFW";
+                } else if ("sketchy".equals(purity)) {
+                    rating = "Sketchy";
+                } else if ("nsfw".equals(purity)) {
+                    rating = "NSFW";
+                }
+            } catch (Exception e) {
+                reportCrash("parseImagePageFromApi rating", e);
+            }
+            
+            // Get uploader
+            String uploader = "Unknown";
+            try {
+                uploader = wallpaper.optString("uploader", "Unknown");
+            } catch (Exception e) {
+                reportCrash("parseImagePageFromApi uploader", e);
+            }
+            
+            // Get upload date
+            String uploadDate = "Unknown";
+            try {
+                uploadDate = wallpaper.optString("created_at", "Unknown");
+            } catch (Exception e) {
+                reportCrash("parseImagePageFromApi uploadDate", e);
+            }
+            
+            // Get author/source
+            Author author = Author.create("Unknown", Uri.EMPTY);
+            try {
+                String source = wallpaper.optString("source", "");
+                if (!TextUtils.isEmpty(source)) {
+                    author = Author.create(source, Uri.parse(source));
+                }
+            } catch (Exception e) {
+                reportCrash("parseImagePageFromApi author", e);
+            }
+            
+            // Get image path
+            Uri imagePath = Uri.EMPTY;
+            try {
+                String imageUrl = wallpaper.optString("path", "");
+                if (!TextUtils.isEmpty(imageUrl)) {
+                    imagePath = Uri.parse(imageUrl);
+                }
+            } catch (Exception e) {
+                reportCrash("parseImagePageFromApi imagePath", e);
+            }
+            
+            // Get tags
+            ArrayList<Tag> tags = new ArrayList<>();
+            try {
+                JSONArray tagsArray = wallpaper.optJSONArray("tags");
+                if (tagsArray != null) {
+                    for (int i = 0; i < tagsArray.length(); i++) {
+                        JSONObject tagObj = tagsArray.getJSONObject(i);
+                        String tagName = tagObj.optString("name", "");
+                        if (!TextUtils.isEmpty(tagName)) {
+                            tags.add(Tag.create(tagName));
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                reportCrash("parseImagePageFromApi tags", e);
+            }
+            
+            return ImagePage.create(title, id, imagePath, resolution, category, rating, uploader, uploadDate, author, tags);
+            
+        } catch (Exception e) {
+            reportCrash("parseImagePageFromApi", e);
+            return null;
+        }
+    }
+
     private ArrayList<Tag> getTags(Document document) {
 
         ArrayList<Tag> tags = new ArrayList<>();
