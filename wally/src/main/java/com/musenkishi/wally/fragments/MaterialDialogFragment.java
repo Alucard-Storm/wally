@@ -110,7 +110,7 @@ public class MaterialDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         if (getActivity() != null) {
-            final Dialog dialog = new Dialog(getActivity(), R.style.Base_Theme_AppCompat_Light_Dialog );
+            final Dialog dialog = new Dialog(getActivity(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog);
 //                    android.R.style.Theme_DeviceDefault_Light_Dialog);
             dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
             dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,

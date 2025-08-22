@@ -105,7 +105,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     private boolean isDevicePluggedIn() {
-        Intent intent = registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        Intent intent;
+        if (Build.VERSION.SDK_INT >= 33) {
+            intent = registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED), Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            intent = registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        }
         assert intent != null;
         int plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
         return plugged == BatteryManager.BATTERY_PLUGGED_USB;
@@ -132,7 +137,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(downloadCompleteReceiver, downloadCompleteIntentFilter);
+        if (Build.VERSION.SDK_INT >= 33) {
+            registerReceiver(downloadCompleteReceiver, downloadCompleteIntentFilter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(downloadCompleteReceiver, downloadCompleteIntentFilter);
+        }
     }
 
     @Override

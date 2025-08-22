@@ -310,13 +310,12 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            case R.id.action_share:
-                return false;
-            case R.id.action_open:
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, pageUri);
-                startActivity(browserIntent);
-                break;
+        if (id == R.id.action_share) {
+            return false;
+        } else if (id == R.id.action_open) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, pageUri);
+            startActivity(browserIntent);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

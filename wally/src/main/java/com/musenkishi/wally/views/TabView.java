@@ -76,15 +76,12 @@ public class TabView extends LinearLayout {
                 for (int i = 0; i < n; i++){
                     int attr = typedArray.getIndex(i);
 
-                    switch (attr){
-                        case R.styleable.TabView_src:
-                            int src = typedArray.getResourceId(i, 0);
-                            setIcon(src);
-                            break;
-                        case R.styleable.TabView_text:
-                            CharSequence text = typedArray.getText(attr);
-                            setText(text);
-                            break;
+                    if (attr == R.styleable.TabView_src) {
+                        int src = typedArray.getResourceId(i, 0);
+                        setIcon(src);
+                    } else if (attr == R.styleable.TabView_text) {
+                        CharSequence text = typedArray.getText(attr);
+                        setText(text);
                     }
                 }
                 typedArray.recycle();

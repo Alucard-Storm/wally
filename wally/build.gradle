@@ -43,6 +43,7 @@ android {
 	def Properties versionProps = new Properties()
 	versionProps.load(new FileInputStream(file('version.properties')))
 	defaultConfig {
+		applicationId "com.musenkishi.wally"
 		minSdkVersion 21
 		targetSdkVersion 34
 		versionName versionProps['name']
@@ -84,6 +85,10 @@ android {
 	compileOptions {
 		sourceCompatibility JavaVersion.VERSION_17
 		targetCompatibility JavaVersion.VERSION_17
+	}
+
+	buildFeatures {
+		buildConfig true
 	}
 }
 

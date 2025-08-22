@@ -77,15 +77,12 @@ public class TabBarView extends LinearLayout {
                 for (int i = 0; i < n; i++){
                     int attr = typedArray.getIndex(i);
 
-                    switch (attr){
-                        case R.styleable.TabBarView_tabBarColor:
-                            int color = typedArray.getColor(i, Color.WHITE);
-                            paint.setColor(color);
-                            break;
-                        case R.styleable.TabBarView_tabBarSize:
-                            int size = typedArray.getDimensionPixelSize(i, (int) (STRIP_HEIGHT * getResources().getDisplayMetrics().density + .5f));
-                            stripHeight = size;
-                            break;
+                    if (attr == R.styleable.TabBarView_tabBarColor) {
+                        int color = typedArray.getColor(i, Color.WHITE);
+                        paint.setColor(color);
+                    } else if (attr == R.styleable.TabBarView_tabBarSize) {
+                        int size = typedArray.getDimensionPixelSize(i, (int) (STRIP_HEIGHT * getResources().getDisplayMetrics().density + .5f));
+                        stripHeight = size;
                     }
                 }
                 typedArray.recycle();
