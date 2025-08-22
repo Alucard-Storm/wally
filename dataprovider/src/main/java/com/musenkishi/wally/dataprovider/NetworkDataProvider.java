@@ -57,6 +57,8 @@ public class NetworkDataProvider {
             builder.appendEncodedPath(path)
                   .appendQueryParameter(FilterBoardsKeys.PARAMETER_KEY, filterGroupsStructure.getBoardsFilter())
                   .appendQueryParameter(FilterPurityKeys.PARAMETER_KEY, filterGroupsStructure.getPurityFilter())
+                  .appendQueryParameter(FilterResolutionKeys.PARAMETER_KEY, filterGroupsStructure.getResolutionFilter().getValue())
+                  .appendQueryParameter(FilterAspectRatioKeys.PARAMETER_KEY, filterGroupsStructure.getAspectRatioFilter().getValue())
                   .appendQueryParameter("page", page+"");
         } else {
             // For other paths (search, random, latest), use the search endpoint
@@ -82,7 +84,7 @@ public class NetworkDataProvider {
         return builder.build();
     }
 
-    Uri buildWallhavenApiUrl(int page, String path, FilterGroupsStructure filterGroupsStructure, String query, String color) {
+    public Uri buildWallhavenApiUrl(int page, String path, FilterGroupsStructure filterGroupsStructure, String query, String color) {
         String sorting = "views";
         if (PATH_SEARCH.equalsIgnoreCase(path)) {
             sorting = "relevance";
@@ -90,6 +92,8 @@ public class NetworkDataProvider {
             sorting = "random";
         } else if (PATH_LATEST.equalsIgnoreCase(path)) {
             sorting = "date_added";
+        } else if (PATH_TOPLIST.equalsIgnoreCase(path)) {
+            sorting = "toplist";
         }
 
         Uri.Builder builder = new Uri.Builder();
@@ -97,6 +101,7 @@ public class NetworkDataProvider {
                 .appendEncodedPath("api/v1/search")
                 .appendQueryParameter(FilterBoardsKeys.PARAMETER_KEY, filterGroupsStructure.getBoardsFilter())
                 .appendQueryParameter(FilterPurityKeys.PARAMETER_KEY, filterGroupsStructure.getPurityFilter())
+                .appendQueryParameter(FilterResolutionKeys.PARAMETER_KEY, filterGroupsStructure.getResolutionFilter().getValue())
                 .appendQueryParameter(FilterAspectRatioKeys.PARAMETER_KEY, filterGroupsStructure.getAspectRatioFilter().getValue())
                 .appendQueryParameter("sorting", sorting)
                 .appendQueryParameter("order", "desc")
