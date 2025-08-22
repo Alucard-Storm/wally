@@ -75,21 +75,66 @@ public class NetworkDataProvider {
         return builder.build();
     }
 
+    Uri buildWallhavenApiUrl(int page, String path, FilterGroupsStructure filterGroupsStructure, String query, String color) {
+        String sorting = "views";
+        if (PATH_SEARCH.equalsIgnoreCase(path)) {
+            sorting = "relevance";
+        } else if (PATH_RANDOM.equalsIgnoreCase(path)) {
+            sorting = "random";
+        } else if (PATH_LATEST.equalsIgnoreCase(path)) {
+            sorting = "date_added";
+        }
+
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("https").authority("wallhaven.cc")
+                .appendEncodedPath("api/v1/search")
+                .appendQueryParameter(FilterBoardsKeys.PARAMETER_KEY, filterGroupsStructure.getBoardsFilter())
+                .appendQueryParameter(FilterPurityKeys.PARAMETER_KEY, filterGroupsStructure.getPurityFilter())
+                .appendQueryParameter(FilterAspectRatioKeys.PARAMETER_KEY, filterGroupsStructure.getAspectRatioFilter().getValue())
+                .appendQueryParameter("sorting", sorting)
+                .appendQueryParameter("order", "desc")
+                .appendQueryParameter("page", page+"");
+
+        if (query != null) {
+            builder.appendQueryParameter("q", query);
+        }
+        if (color != null) {
+            builder.appendQueryParameter("color", color);
+        }
+
+        return builder.build();
+    }
+
     public String getDataSync(String path, int index, FilterGroupsStructure filterGroupsStructure){
         Uri uri = buildWallhavenUrl(index, path, filterGroupsStructure);
         String url = uri.toString();
-        return getDataSync(url);
+        return getDataSync(url, null);
+    }
+
+    public String getDataSync(String path, int index, FilterGroupsStructure filterGroupsStructure, String apiKey){
+        Uri uri = buildWallhavenUrl(index, path, filterGroupsStructure);
+        String url = uri.toString();
+        return getDataSync(url, apiKey);
     }
 
     public String getDataSync(String url){
+        return getDataSync(url, null);
+    }
+
+    public String getDataSync(String url, String apiKey){
         try {
             OkHttpClient client = new OkHttpClient();
             client.setConnectTimeout(10, TimeUnit.SECONDS);
             client.setReadTimeout(10, TimeUnit.SECONDS);
 
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
+            Request.Builder requestBuilder = new Request.Builder()
+                    .url(url);
+
+            if (apiKey != null && apiKey.length() > 0) {
+                requestBuilder.addHeader("X-API-Key", apiKey);
+            }
+
+            Request request = requestBuilder.build();
             Response response = client.newCall(request).execute();
             return response.body().string();
         } catch (MalformedURLException e) {
@@ -107,16 +152,37 @@ public class NetworkDataProvider {
         getData(url, onDataReceivedListener);
     }
 
+    public void getData(String path, int index, FilterGroupsStructure filterGroupsStructure, String apiKey, final OnDataReceivedListener onDataReceivedListener) {
+        Uri uri = buildWallhavenUrl(index, path, filterGroupsStructure);
+        String url = uri.toString();
+        getData(url, apiKey, onDataReceivedListener);
+    }
+
+    public void getDataApi(String path, int index, FilterGroupsStructure filterGroupsStructure, String apiKey, final OnDataReceivedListener onDataReceivedListener) {
+        Uri uri = buildWallhavenApiUrl(index, path, filterGroupsStructure, null, null);
+        String url = uri.toString();
+        getData(url, apiKey, onDataReceivedListener);
+    }
+
     public void getData(String url, final OnDataReceivedListener onDataReceivedListener) {
+        getData(url, null, onDataReceivedListener);
+    }
+
+    public void getData(String url, String apiKey, final OnDataReceivedListener onDataReceivedListener) {
         try {
             OkHttpClient client = new OkHttpClient();
 
             client.setConnectTimeout(10, TimeUnit.SECONDS);
             client.setReadTimeout(10, TimeUnit.SECONDS);
 
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
+            Request.Builder requestBuilder = new Request.Builder()
+                    .url(url);
+
+            if (apiKey != null && apiKey.length() > 0) {
+                requestBuilder.addHeader("X-API-Key", apiKey);
+            }
+
+            Request request = requestBuilder.build();
             Response response = client.newCall(request).execute();
             if (onDataReceivedListener != null) {
                 onDataReceivedListener.onData(response.body().string(), url);
@@ -150,6 +216,22 @@ public class NetworkDataProvider {
         uri = uri.buildUpon().appendQueryParameter("q", query).build();
         String url = uri.toString();
         getData(url, onDataReceivedListener);
+    }
+
+    public void getData(String path, String query, String color, int index, FilterGroupsStructure filterGroupsStructure, String apiKey, OnDataReceivedListener onDataReceivedListener) {
+        Uri uri = buildWallhavenUrl(index, path, filterGroupsStructure);
+        if (color != null) {
+            uri = uri.buildUpon().appendQueryParameter("color", color).build();
+        }
+        uri = uri.buildUpon().appendQueryParameter("q", query).build();
+        String url = uri.toString();
+        getData(url, apiKey, onDataReceivedListener);
+    }
+
+    public void getDataApi(String path, String query, String color, int index, FilterGroupsStructure filterGroupsStructure, String apiKey, OnDataReceivedListener onDataReceivedListener) {
+        Uri uri = buildWallhavenApiUrl(index, path, filterGroupsStructure, query, color);
+        String url = uri.toString();
+        getData(url, apiKey, onDataReceivedListener);
     }
 
     public interface OnDataReceivedListener {

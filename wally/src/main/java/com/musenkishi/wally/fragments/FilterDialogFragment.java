@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
@@ -60,7 +61,10 @@ public class FilterDialogFragment extends MaterialDialogFragment {
     private CheckBox checkBoxBoardPeople;
     private CheckBox checkBoxPuritySFW;
     private CheckBox checkBoxPuritySketchy;
+    private CheckBox checkBoxPurityNSFW;
     private Spinner spinnerResolution;
+    private EditText apiKeyInput;
+    private View apiKeyLayout;
 
     private boolean hasAnythingChanged = false;
 
@@ -130,8 +134,11 @@ public class FilterDialogFragment extends MaterialDialogFragment {
             checkBoxBoardPeople = (CheckBox) dialog.findViewById(R.id.filter_boards_high_resolution);
             checkBoxPuritySFW = (CheckBox) dialog.findViewById(R.id.filter_purity_sfw);
             checkBoxPuritySketchy = (CheckBox) dialog.findViewById(R.id.filter_purity_sketchy);
+            checkBoxPurityNSFW = (CheckBox) dialog.findViewById(R.id.filter_purity_nsfw);
             spinnerAspectRatio = (Spinner) dialog.findViewById(R.id.filter_aspect_ratio_spinner);
             spinnerResolution = (Spinner) dialog.findViewById(R.id.filter_resolution_spinner);
+            apiKeyInput = (EditText) dialog.findViewById(R.id.filter_api_key_input);
+            apiKeyLayout = dialog.findViewById(R.id.filter_layout_api_key);
 
             int[] titleIds = new int[]{
                     R.id.filter_title_categories,
@@ -183,8 +190,23 @@ public class FilterDialogFragment extends MaterialDialogFragment {
         FilterPurity filterPurity = new FilterPurity(WallyApplication.getDataProviderInstance().getPurity(FilterPurityKeys.PARAMETER_KEY));
         checkBoxPuritySFW.setChecked(filterPurity.isSfwChecked());
         checkBoxPuritySketchy.setChecked(filterPurity.isSketchyChecked());
+        checkBoxPurityNSFW.setChecked(filterPurity.isNsfwChecked());
         checkBoxPuritySFW.setOnCheckedChangeListener(ratingCheckedChangeListener);
         checkBoxPuritySketchy.setOnCheckedChangeListener(ratingCheckedChangeListener);
+        checkBoxPurityNSFW.setOnCheckedChangeListener(ratingCheckedChangeListener);
+
+        // Prefill API key and show/hide based on NSFW
+        String savedKey = WallyApplication.getDataProviderInstance().getSharedPreferencesDataProviderInstance().getWallhavenApiKey();
+        if (savedKey != null) {
+            apiKeyInput.setText(savedKey);
+        }
+        apiKeyLayout.setVisibility(checkBoxPurityNSFW.isChecked() ? View.VISIBLE : View.GONE);
+        checkBoxPurityNSFW.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                apiKeyLayout.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     private void setupAspectRatioSpinner() {
@@ -252,11 +274,19 @@ public class FilterDialogFragment extends MaterialDialogFragment {
             hasAnythingChanged = true;
         }
 
-        FilterPurity currentFilterPurity = new FilterPurity(checkBoxPuritySFW.isChecked(), checkBoxPuritySketchy.isChecked());
+        FilterPurity currentFilterPurity = new FilterPurity(checkBoxPuritySFW.isChecked(), checkBoxPuritySketchy.isChecked(), checkBoxPurityNSFW.isChecked());
         FilterPurity savedFilterPurity = new FilterPurity(WallyApplication.getDataProviderInstance().getPurity(FilterPurityKeys.PARAMETER_KEY));
         if (!currentFilterPurity.equals(savedFilterPurity)){
             WallyApplication.getDataProviderInstance().setPurity(FilterPurityKeys.PARAMETER_KEY, currentFilterPurity.getFormattedValue());
             hasAnythingChanged = true;
+        }
+
+        // Save API key if provided and NSFW checked
+        if (checkBoxPurityNSFW.isChecked()) {
+            String key = apiKeyInput.getText() != null ? apiKeyInput.getText().toString().trim() : null;
+            if (key != null && key.length() > 0) {
+                WallyApplication.getDataProviderInstance().getSharedPreferencesDataProviderInstance().setWallhavenApiKey(key);
+            }
         }
 
         Filter<String, String> filterAspectRatio = (Filter<String, String>) spinnerAspectRatio.getSelectedItem();
@@ -275,7 +305,7 @@ public class FilterDialogFragment extends MaterialDialogFragment {
     }
 
     private boolean hasAtLeastOneRatingChecked() {
-        return checkBoxPuritySFW.isChecked() || checkBoxPuritySketchy.isChecked();
+        return checkBoxPuritySFW.isChecked() || checkBoxPuritySketchy.isChecked() || checkBoxPurityNSFW.isChecked();
     }
 
     private boolean hasAtLeastOneCategoryChecked() {

@@ -24,15 +24,25 @@ public class FilterPurity {
 
     private boolean sfwChecked = true;
     private boolean sketchyChecked = true;
+    private boolean nsfwChecked = false;
 
     public FilterPurity(boolean sfwChecked, boolean sketchyChecked) {
         this.sfwChecked = sfwChecked;
         this.sketchyChecked = sketchyChecked;
     }
 
+    public FilterPurity(boolean sfwChecked, boolean sketchyChecked, boolean nsfwChecked) {
+        this.sfwChecked = sfwChecked;
+        this.sketchyChecked = sketchyChecked;
+        this.nsfwChecked = nsfwChecked;
+    }
+
     public FilterPurity(String paramValue) {
         this.sfwChecked = String.valueOf(paramValue.charAt(0)).equalsIgnoreCase("1");
         this.sketchyChecked = String.valueOf(paramValue.charAt(1)).equalsIgnoreCase("1");
+        if (paramValue.length() > 2) {
+            this.nsfwChecked = String.valueOf(paramValue.charAt(2)).equalsIgnoreCase("1");
+        }
     }
 
     public boolean isSfwChecked() {
@@ -46,6 +56,14 @@ public class FilterPurity {
     public boolean isSketchyChecked() {
         return sketchyChecked;
     }
+    public boolean isNsfwChecked() {
+        return nsfwChecked;
+    }
+
+    public void setNsfwChecked(boolean nsfwChecked) {
+        this.nsfwChecked = nsfwChecked;
+    }
+
 
     public void setSketchyChecked(boolean sketchyChecked) {
         this.sketchyChecked = sketchyChecked;
@@ -60,7 +78,7 @@ public class FilterPurity {
         String formattedString = "";
         formattedString += sfwChecked ? FilterPurityKeys.SFW_KEY : "0";
         formattedString += sketchyChecked ? FilterPurityKeys.SKETCHY_KEY : "0";
-        formattedString += "0";
+        formattedString += nsfwChecked ? FilterPurityKeys.NSFW_KEY : "0";
         return formattedString;
     }
 
@@ -73,6 +91,7 @@ public class FilterPurity {
 
         if (sketchyChecked != that.sketchyChecked) return false;
         if (sfwChecked != that.sfwChecked) return false;
+        if (nsfwChecked != that.nsfwChecked) return false;
 
         return true;
     }
@@ -81,6 +100,7 @@ public class FilterPurity {
     public int hashCode() {
         int result = (sfwChecked ? 1 : 0);
         result = 31 * result + (sketchyChecked ? 1 : 0);
+        result = 31 * result + (nsfwChecked ? 1 : 0);
         return result;
     }
 }

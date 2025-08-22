@@ -28,6 +28,8 @@ import com.musenkishi.wally.models.Tag;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -73,6 +75,27 @@ public class Parser {
                     images.add(localThumbnail);
                 }
             }
+        }
+        return images;
+    }
+
+    public ArrayList<Image> parseImagesFromApi(String data) {
+        ArrayList<Image> images = new ArrayList<Image>();
+        try {
+            JSONObject root = new JSONObject(data);
+            JSONArray arr = root.getJSONArray("data");
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject it = arr.getJSONObject(i);
+                String id = it.optString("id");
+                String thumbsSmall = it.optJSONObject("thumbs").optString("small");
+                String pageUrl = "https://wallhaven.cc/w/" + id;
+                String resolution = it.optInt("width", 0) + " x " + it.optInt("height", 0);
+                if (!TextUtils.isEmpty(id) && !TextUtils.isEmpty(thumbsSmall)) {
+                    images.add(Image.create(id, thumbsSmall, pageUrl, resolution));
+                }
+            }
+        } catch (Exception e) {
+            reportCrash("parseImagesFromApi", e);
         }
         return images;
     }

@@ -41,6 +41,7 @@ public class SharedPreferencesDataProvider {
     public static final String CRASH_LOGGING = ".crashlogging";
     public static final String APP_START_COUNT = ".appStartCount";
     public static final String LATEST_VERSION_INSTALLED = ".lastVersionInstalled";
+    public static final String WALLHAVEN_API_KEY = ".wallhavenApiKey";
 
     public static final int CRASH_LOGGING_NOT_READ = 193784;
     public static final int CRASH_LOGGING_NOT_APPROVED = 193785;
@@ -79,6 +80,14 @@ public class SharedPreferencesDataProvider {
 
     public void setUserApprovedCrashLogging(int crashLoggingState){
         sharedPreferences.edit().putInt(CRASH_LOGGING, crashLoggingState).apply();
+    }
+
+    public void setWallhavenApiKey(String apiKey) {
+        sharedPreferences.edit().putString(WALLHAVEN_API_KEY, apiKey).apply();
+    }
+
+    public String getWallhavenApiKey() {
+        return sharedPreferences.getString(WALLHAVEN_API_KEY, null);
     }
 
     public Filter<String, String> getTimespan(String tag){

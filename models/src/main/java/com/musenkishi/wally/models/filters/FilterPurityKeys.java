@@ -25,5 +25,6 @@ public final class FilterPurityKeys {
     public static final String PARAMETER_KEY = "purity";
     public static final String SFW_KEY = "1";
     public static final String SKETCHY_KEY = "1";
+    public static final String NSFW_KEY = "1";
 
 }

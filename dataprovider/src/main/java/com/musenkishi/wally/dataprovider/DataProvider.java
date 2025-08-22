@@ -30,6 +30,7 @@ import com.musenkishi.wally.models.Filter;
 import com.musenkishi.wally.models.Image;
 import com.musenkishi.wally.models.ImagePage;
 import com.musenkishi.wally.models.filters.FilterGroupsStructure;
+import com.musenkishi.wally.models.filters.FilterPurityKeys;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -77,7 +78,28 @@ public class DataProvider {
     }
 
     public void getImages(String path, String query, String color, int index, FilterGroupsStructure filterGroupsStructure, final OnImagesReceivedListener onImagesReceivedListener) {
-        new NetworkDataProvider().getData(path, query, color, index, filterGroupsStructure, new OnDataReceivedListener() {
+        String apiKey = sharedPreferencesDataProvider.getWallhavenApiKey();
+        boolean wantsNsfw = sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).length() >= 3 && sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).charAt(2) == '1';
+        if (wantsNsfw) {
+            new NetworkDataProvider().getDataApi(path, query, color, index, filterGroupsStructure, apiKey, new OnDataReceivedListener() {
+                @Override
+                public void onData(String data, String url) {
+                    ArrayList<Image> images = parser.parseImagesFromApi(data);
+                    if (onImagesReceivedListener != null) {
+                        onImagesReceivedListener.onImagesReceived(images);
+                    }
+                }
+
+                @Override
+                public void onError(DataProviderError dataProviderError) {
+                    if (onImagesReceivedListener != null) {
+                        onImagesReceivedListener.onError(dataProviderError);
+                    }
+                }
+            });
+            return;
+        }
+        new NetworkDataProvider().getData(path, query, color, index, filterGroupsStructure, apiKey, new OnDataReceivedListener() {
             @Override
             public void onData(String data, String url) {
                 ArrayList<Image> images = parser.parseImages(data);
@@ -96,7 +118,19 @@ public class DataProvider {
     }
 
     public ArrayList<Image> getImagesSync(String path, int index, FilterGroupsStructure filterGroupsStructure) {
-        String data = new NetworkDataProvider().getDataSync(path, index, filterGroupsStructure);
+        String apiKey = sharedPreferencesDataProvider.getWallhavenApiKey();
+        boolean wantsNsfw = sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).length() >= 3 && sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).charAt(2) == '1';
+        String data;
+        if (wantsNsfw) {
+            Uri uri = new NetworkDataProvider().buildWallhavenApiUrl(index, path, filterGroupsStructure, null, null);
+            data = new NetworkDataProvider().getDataSync(uri.toString(), apiKey);
+            if (data != null) {
+                return parser.parseImagesFromApi(data);
+            }
+            return null;
+        } else {
+            data = new NetworkDataProvider().getDataSync(path, index, filterGroupsStructure, apiKey);
+        }
         if (data != null) {
             return parser.parseImages(data);
         } else {
@@ -108,7 +142,33 @@ public class DataProvider {
      */
     public void getImages(String path, int index, FilterGroupsStructure filterGroupsStructure, final OnImagesReceivedListener onImagesReceivedListener) {
 
-        new NetworkDataProvider().getData(path, index, filterGroupsStructure, new OnDataReceivedListener() {
+        String apiKey = sharedPreferencesDataProvider.getWallhavenApiKey();
+        boolean wantsNsfw = sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).length() >= 3 && sharedPreferencesDataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY).charAt(2) == '1';
+        if (wantsNsfw) {
+            new NetworkDataProvider().getDataApi(path, index, filterGroupsStructure, apiKey, new OnDataReceivedListener() {
+                @Override
+                public void onData(String data, String url) {
+                    ArrayList<Image> images = parser.parseImagesFromApi(data);
+                    if (onImagesReceivedListener != null) {
+                        if (!images.isEmpty()) {
+                            onImagesReceivedListener.onImagesReceived(images);
+                        } else {
+                            DataProviderError noImagesError = new DataProviderError(DataProviderError.Type.LOCAL, 204, "No images");
+                            onImagesReceivedListener.onError(noImagesError);
+                        }
+                    }
+                }
+
+                @Override
+                public void onError(DataProviderError dataProviderError) {
+                    if (onImagesReceivedListener != null) {
+                        onImagesReceivedListener.onError(dataProviderError);
+                    }
+                }
+            });
+            return;
+        }
+        new NetworkDataProvider().getData(path, index, filterGroupsStructure, apiKey, new OnDataReceivedListener() {
             @Override
             public void onData(String data, String url) {
                 ArrayList<Image> images = parser.parseImages(data);

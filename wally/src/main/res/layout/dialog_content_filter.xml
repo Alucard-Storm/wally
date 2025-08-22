@@ -89,6 +89,12 @@
                 android:layout_height="wrap_content"
                 android:text="Sketchy"/>
 
+            <CheckBox
+                android:id="@+id/filter_purity_nsfw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NSFW"/>
+
         </LinearLayout>
     </LinearLayout>
 
@@ -145,6 +151,29 @@
 
 
         </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/filter_layout_api_key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="16dp">
+
+        <TextView
+            android:id="@+id/filter_title_api_key"
+            style="@style/Material.Header.SubHeader"
+            android:textColor="@color/Filter.Section.Title"
+            android:text="Wallhaven API key (required for NSFW)" />
+
+        <EditText
+            android:id="@+id/filter_api_key_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter API key"
+            android:inputType="textPassword"
+            android:singleLine="true"/>
 
     </LinearLayout>
 
