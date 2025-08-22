@@ -283,18 +283,20 @@ public class DataProvider {
         try {
             DownloadManager.Request request = new DownloadManager.Request(path);
             request.setTitle(notificationTitle);
-            request.setVisibleInDownloadsUi(true);
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
-            request.allowScanningByMediaScanner();
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
             
-            // Create the Wally directory if it doesn't exist
-            File wallsDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "Wally");
-            if (!wallsDir.exists()) {
-                wallsDir.mkdirs();
+            // Use MediaStore for Android Q and above, fallback to legacy method for older versions
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "Wally/" + filename + type);
+            } else {
+                // Create the Wally directory if it doesn't exist (legacy approach)
+                File wallsDir = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES), "Wally");
+                if (!wallsDir.exists()) {
+                    wallsDir.mkdirs();
+                }
+                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "Wally/" + filename + type);
             }
-            
-            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "/Wally/" + filename + type);
             long downloadId = downloadManager.enqueue(request);
             
             // Double check if the download was actually queued
