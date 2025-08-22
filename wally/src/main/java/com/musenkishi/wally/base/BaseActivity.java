@@ -29,6 +29,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import androidx.annotation.NonNull;
+import android.widget.Toast;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -75,7 +77,26 @@ public abstract class BaseActivity extends AppCompatActivity {
     private BroadcastReceiver downloadCompleteReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            handleReceivedIntent(context, intent);
+            if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(intent.getAction())) {
+                long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+                if (downloadId != -1) {
+                    DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+                    DownloadManager.Query query = new DownloadManager.Query();
+                    query.setFilterById(downloadId);
+                    try {
+                        android.database.Cursor cursor = downloadManager.query(query);
+                        if (cursor != null && cursor.moveToFirst()) {
+                            int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                            if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                                handleReceivedIntent(context, intent);
+                            }
+                            cursor.close();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
     };
 
@@ -116,22 +137,110 @@ public abstract class BaseActivity extends AppCompatActivity {
         return plugged == BatteryManager.BATTERY_PLUGGED_USB;
     }
 
+    private static final int STORAGE_PERMISSION_REQUEST_CODE = 1;
+
     public boolean isStoragePermissionGranted() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                Log.v("BaseActivity", "Permission is granted");
+        if (Build.VERSION.SDK_INT >= 33) {
+            // For Android 13 and above, use the new photo picker and media permissions
+            if (checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED) {
+                Log.v("BaseActivity", "Media permission is granted");
                 return true;
             } else {
-
-                Log.v("BaseActivity", "Storage Permission is revoked");
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                if (shouldShowRequestPermissionRationale(Manifest.permission.READ_MEDIA_IMAGES)) {
+                    // Show an explanation to the user
+                    new androidx.appcompat.app.AlertDialog.Builder(this)
+                            .setTitle("Media Permission Needed")
+                            .setMessage("This permission is needed to save wallpapers to your device. Without this permission, you won't be able to save or set wallpapers.")
+                            .setPositiveButton("OK", (dialog, which) -> {
+                                // Request permission again
+                                ActivityCompat.requestPermissions(this,
+                                        new String[]{
+                                                Manifest.permission.READ_MEDIA_IMAGES,
+                                                Manifest.permission.READ_MEDIA_VIDEO
+                                        },
+                                        STORAGE_PERMISSION_REQUEST_CODE);
+                            })
+                            .create()
+                            .show();
+                } else {
+                    // No explanation needed, request the permission
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{
+                                    Manifest.permission.READ_MEDIA_IMAGES,
+                                    Manifest.permission.READ_MEDIA_VIDEO
+                            },
+                            STORAGE_PERMISSION_REQUEST_CODE);
+                }
+                return false;
+            }
+        } else if (Build.VERSION.SDK_INT >= 23) {
+            // For Android 6-12, use the old storage permissions
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                Log.v("BaseActivity", "Storage permission is granted");
+                return true;
+            } else {
+                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    // Show an explanation to the user
+                    new androidx.appcompat.app.AlertDialog.Builder(this)
+                            .setTitle("Storage Permission Needed")
+                            .setMessage("This permission is needed to save wallpapers to your device. Without this permission, you won't be able to save or set wallpapers.")
+                            .setPositiveButton("OK", (dialog, which) -> {
+                                // Request permission again
+                                ActivityCompat.requestPermissions(this,
+                                        new String[]{
+                                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                Manifest.permission.READ_EXTERNAL_STORAGE
+                                        },
+                                        STORAGE_PERMISSION_REQUEST_CODE);
+                            })
+                            .create()
+                            .show();
+                } else {
+                    // No explanation needed, request the permission
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                            },
+                            STORAGE_PERMISSION_REQUEST_CODE);
+                }
                 return false;
             }
         } else { //permission is automatically granted on sdk<23 upon installation
             Log.v("BaseActivity", "Permission is granted");
             return true;
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.v("BaseActivity", "Permission: " + permissions[0] + " was granted");
+                onStoragePermissionGranted();
+            } else {
+                Log.v("BaseActivity", "Permission: " + permissions[0] + " was denied");
+                // Show settings dialog if permission was denied
+                new androidx.appcompat.app.AlertDialog.Builder(this)
+                        .setTitle("Permission Required")
+                        .setMessage("Storage permission is required for saving images. Please grant this permission in Settings to use this feature.")
+                        .setPositiveButton("Open Settings", (dialog, which) -> {
+                            // Open app settings
+                            Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            intent.setData(android.net.Uri.parse("package:" + getPackageName()));
+                            startActivity(intent);
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .create()
+                        .show();
+            }
+        }
+    }
+
+    // Override this method in activities that need to perform operations after permission is granted
+    protected void onStoragePermissionGranted() {
+        // Default empty implementation
     }
 
     @Override

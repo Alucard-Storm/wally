@@ -269,23 +269,45 @@ public class DataProvider {
 
         if (fileManager.fileExists(filename)) {
             File file = fileManager.getFile(filename);
-            Uri fileUri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", file);
-            return new SaveImageRequest(fileUri);
-        } else {
-
-            String type = ".png"; //fallback to ".png"
-            if (path.toString().lastIndexOf(".") != -1) { //-1 means there are no punctuations in the path
-                type = path.toString().substring(path.toString().lastIndexOf("."));
+            if (file != null) {
+                Uri fileUri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", file);
+                return new SaveImageRequest(fileUri);
             }
+        }
 
+        String type = ".png"; //fallback to ".png"
+        if (path.toString().lastIndexOf(".") != -1) { //-1 means there are no punctuations in the path
+            type = path.toString().substring(path.toString().lastIndexOf("."));
+        }
+
+        try {
             DownloadManager.Request request = new DownloadManager.Request(path);
             request.setTitle(notificationTitle);
             request.setVisibleInDownloadsUi(true);
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
             request.allowScanningByMediaScanner();
+            
+            // Create the Wally directory if it doesn't exist
+            File wallsDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "Wally");
+            if (!wallsDir.exists()) {
+                wallsDir.mkdirs();
+            }
+            
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "/Wally/" + filename + type);
-
-            return new SaveImageRequest(downloadManager.enqueue(request));
+            long downloadId = downloadManager.enqueue(request);
+            
+            // Double check if the download was actually queued
+            DownloadManager.Query query = new DownloadManager.Query();
+            query.setFilterById(downloadId);
+            if (downloadManager.query(query).getCount() > 0) {
+                return new SaveImageRequest(downloadId);
+            } else {
+                return new SaveImageRequest((Long)null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new SaveImageRequest((Long)null);
         }
     }
 

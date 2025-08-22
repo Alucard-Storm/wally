@@ -33,23 +33,36 @@ public class FileManager {
     public FileManager() {
     }
 
-    public boolean fileExists(String filename){
-        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+    public boolean fileExists(String filename) {
+        File picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        if (picturesDir == null) {
+            return false;
+        }
+        
+        String root = picturesDir.toString();
         File myDir = new File(root + DIRECTORY_BASE);
-        myDir.mkdirs();
+        
+        // Create directory if it doesn't exist
+        if (!myDir.exists()) {
+            if (!myDir.mkdirs()) {
+                return false;
+            }
+        }
+        
         File[] listOfFiles = myDir.listFiles();
-
-        if(listOfFiles == null) {
+        if (listOfFiles == null) {
             return false;
         }
 
-        for (File file : listOfFiles)
-        {
-            if (file.isFile())
-            {
-                String[] filenames = file.getName().split("\\.(?=[^\\.]+$)"); //split filename from it's extension
-                if(filenames[0].equalsIgnoreCase(filename)) { //matching defined filename
-                    return true;
+        // Check for both png and jpg extensions
+        String normalizedFilename = filename.toLowerCase();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                String currentFilename = file.getName().toLowerCase();
+                String nameWithoutExt = currentFilename.replaceFirst("[.][^.]+$", "");
+                
+                if (nameWithoutExt.equals(normalizedFilename)) {
+                    return file.length() > 0; // Make sure file is not empty
                 }
             }
         }
