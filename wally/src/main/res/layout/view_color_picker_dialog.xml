@@ -46,7 +46,7 @@
         android:layout_weight="1"
         >
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <LinearLayout
                         android:orientation="vertical"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -62,10 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:orientation="horizontal"
-                android:layout_marginTop="10dp"
-                android:layout_below="@id/color_picker_view"
-                android:layout_alignLeft="@id/color_picker_view"
-                android:layout_alignRight="@id/color_picker_view">
+                android:layout_marginTop="10dp">
 
                 <net.margaritov.preference.colorpicker.view.ColorPanelView
                     android:id="@+id/color_panel_old"

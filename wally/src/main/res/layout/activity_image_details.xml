@@ -34,7 +34,7 @@
             android:id="@+id/image_details_imageview_holder"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            >
+            tools:ignore="UselessParent">
 
             <ImageView
                 android:id="@+id/image_details_imageview"
@@ -124,8 +124,8 @@
                     android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="@dimen/default_gap"
-                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="@dimen/default_gap"
+                    android:layout_alignParentEnd="true"
                     android:layout_alignParentTop="true"
                     android:background="@drawable/floating_action_button"
                     android:scaleType="center"
@@ -217,9 +217,10 @@
                             android:id="@+id/image_details_source"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_toRightOf="@+id/image_details_uploader"
-                            android:layout_alignParentRight="true"
+                            android:layout_toEndOf="@+id/image_details_uploader"
+                            android:layout_alignParentEnd="true"
                             android:layout_gravity="start"
+                            android:focusable="true"
                             android:gravity="end"
                             android:fontFamily="sans-serif"
                             android:textColor="@color/Black.Transparent"
@@ -234,7 +235,7 @@
                             android:id="@+id/image_details_upload_date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="left"
+                            android:layout_gravity="start"
                             android:fontFamily="sans-serif"
                             android:textColor="@color/Grey.Dark"
                             android:textSize="14sp"
