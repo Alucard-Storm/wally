@@ -48,7 +48,7 @@ import com.musenkishi.wally.activities.ImageDetailsActivity;
 import com.musenkishi.wally.activities.MainActivity;
 import com.musenkishi.wally.adapters.RecyclerImagesAdapter;
 import com.musenkishi.wally.base.BaseActivity;
-import com.musenkishi.wally.base.GridFragment;
+import com.musenkishi.wally.base.BaseFilterFragment;
 import com.musenkishi.wally.base.WallyApplication;
 import com.musenkishi.wally.dataprovider.DataProvider;
 import com.musenkishi.wally.dataprovider.NetworkDataProvider;
@@ -72,7 +72,7 @@ import static com.musenkishi.wally.observers.FiltersChangeReceiver.OnFiltersChan
  * <p>
  * Created by Freddie (Musenkishi) Lust-Hed on 2014-02-28
  */
-public class ToplistFragment extends GridFragment implements RecyclerImagesAdapter.OnSaveButtonClickedListener, Handler.Callback, OnFileChangeListener, OnFiltersChangeListener {
+public class ToplistFragment extends BaseFilterFragment implements RecyclerImagesAdapter.OnSaveButtonClickedListener, Handler.Callback, OnFileChangeListener {
 
     public static final String TAG = "com.musenkishi.wally.ImagesFragment";
 
@@ -196,7 +196,7 @@ public class ToplistFragment extends GridFragment implements RecyclerImagesAdapt
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 if (filterDialogFragment.saveChanges()) {
-                                    WallyApplication.getContext().sendBroadcast(new Intent(FiltersChangeReceiver.FILTERS_CHANGED));
+                                    LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(FiltersChangeReceiver.FILTERS_CHANGED));
                                 }
                             }
                         });

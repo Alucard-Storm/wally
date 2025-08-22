@@ -429,7 +429,7 @@ public class SearchFragment extends GridFragment implements
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 if (filterDialogFragment.saveChanges()) {
-                                    WallyApplication.getContext().sendBroadcast(new Intent(FiltersChangeReceiver.FILTERS_CHANGED));
+                                    LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(FiltersChangeReceiver.FILTERS_CHANGED));
                                 }
                             }
                         });
