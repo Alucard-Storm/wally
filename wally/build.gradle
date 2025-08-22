@@ -17,88 +17,91 @@
 apply plugin: 'com.android.application'
 
 android {
-    lintOptions {
-        checkReleaseBuilds false
-    }
-    /**
-     * directories that gradle will ignore when looking for changes
-     */
-    packagingOptions {
-        exclude 'META-INF/DEPENDENCIES.txt'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/dependencies.txt'
-        exclude 'META-INF/LGPL2.1'
-    }
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
-    def Properties versionProps = new Properties()
-    versionProps.load(new FileInputStream(file('version.properties')))
-    defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 28
-        versionName versionProps['name']
-        versionCode versionProps['code'].toInteger()
-    }
-    /**
-     Look at Roman Nurik's build.gradle. Lots of good stuff there regarding builds:
-     https://github.com/romannurik/muzei/blob/master/main/build.gradle
-     */
-    buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
-        }
-        publicBeta.initWith(buildTypes.release)
-        publicBeta {
-            zipAlignEnabled true
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
-            versionNameSuffix " " + versionProps['betaNumber']
-        }
-        publicAlpha.initWith(buildTypes.release)
-        publicAlpha {
-            zipAlignEnabled true
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
-            versionNameSuffix " " + versionProps['alphaNumber']
-        }
-        debug {
-            debuggable true
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
-            versionNameSuffix ' Debug'
-        }
-    }
-    productFlavors {
-    }
+	lint {
+		checkReleaseBuilds false
+	}
+	/**
+	 * directories that gradle will ignore when looking for changes
+	 */
+	packaging {
+		resources {
+			excludes += ['META-INF/DEPENDENCIES.txt',
+			             'META-INF/LICENSE.txt',
+			             'META-INF/NOTICE.txt',
+			             'META-INF/NOTICE',
+			             'META-INF/LICENSE',
+			             'META-INF/DEPENDENCIES',
+			             'META-INF/notice.txt',
+			             'META-INF/license.txt',
+			             'META-INF/dependencies.txt',
+			             'META-INF/LGPL2.1']
+		}
+	}
+	compileSdkVersion 34
+	namespace "com.musenkishi.wally"
 
-    compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
-    }
+	def Properties versionProps = new Properties()
+	versionProps.load(new FileInputStream(file('version.properties')))
+	defaultConfig {
+		minSdkVersion 21
+		targetSdkVersion 34
+		versionName versionProps['name']
+		versionCode versionProps['code'].toInteger()
+	}
+	/**
+	 Look at Roman Nurik's build.gradle. Lots of good stuff there regarding builds:
+	 https://github.com/romannurik/muzei/blob/master/main/build.gradle
+	 */
+	buildTypes {
+		release {
+			minifyEnabled true
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+		}
+		publicBeta.initWith(buildTypes.release)
+		publicBeta {
+			zipAlignEnabled true
+			minifyEnabled true
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+			versionNameSuffix " " + versionProps['betaNumber']
+		}
+		publicAlpha.initWith(buildTypes.release)
+		publicAlpha {
+			zipAlignEnabled true
+			minifyEnabled true
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+			versionNameSuffix " " + versionProps['alphaNumber']
+		}
+		debug {
+			debuggable true
+			minifyEnabled false
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+			versionNameSuffix ' Debug'
+		}
+	}
+	productFlavors {
+	}
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_17
+		targetCompatibility JavaVersion.VERSION_17
+	}
 }
 
 dependencies {
-    implementation 'androidx.annotation:annotation:1.1.0'
-    implementation 'org.apache.commons:commons-collections4:4.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.palette:palette:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'com.github.chrisbanes.photoview:library:1.2.3'
-    implementation('de.psdev.licensesdialog:licensesdialog:+') {
-        exclude module: 'support-v4'
-    }
-    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    implementation project(':dataprovider')
-    implementation 'com.google.android.apps.muzei:muzei-api:1.0'
-    implementation 'com.wrapp.floatlabelededittext:library:0.0.3'
-    implementation 'com.github.Musenkishi:PaletteLoader:1.1.0'
+	implementation 'androidx.annotation:annotation:1.1.0'
+	implementation 'org.apache.commons:commons-collections4:4.0'
+	implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+	implementation 'androidx.palette:palette:1.0.0'
+	implementation 'androidx.recyclerview:recyclerview:1.0.0'
+	implementation 'androidx.cardview:cardview:1.0.0'
+	implementation 'androidx.appcompat:appcompat:1.0.2'
+	implementation 'com.github.chrisbanes.photoview:library:1.2.3'
+	implementation('de.psdev.licensesdialog:licensesdialog:+') {
+		exclude module: 'support-v4'
+	}
+	implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+	implementation project(':dataprovider')
+	implementation 'com.google.android.apps.muzei:muzei-api:1.0'
+	implementation 'com.wrapp.floatlabelededittext:library:0.0.3'
+	implementation 'com.github.Musenkishi:PaletteLoader:1.1.0'
 }
