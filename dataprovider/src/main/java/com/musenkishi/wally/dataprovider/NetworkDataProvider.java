@@ -49,28 +49,35 @@ public class NetworkDataProvider {
     }
 
     private Uri buildWallhavenUrl(int page, String path, FilterGroupsStructure filterGroupsStructure) {
-
-        String sorting = "views";
-
-        if (PATH_SEARCH.equalsIgnoreCase(path)) {
-            sorting = "relevance";
-        } else if (PATH_RANDOM.equalsIgnoreCase(path)) {
-            sorting = "random";
-        } else if (PATH_LATEST.equalsIgnoreCase(path)) {
-            sorting = "date_added";
-        }
-
         Uri.Builder builder = new Uri.Builder();
-        builder.scheme("https").authority("wallhaven.cc")
-                .appendEncodedPath("search")
-                .appendQueryParameter(FilterBoardsKeys.PARAMETER_KEY, filterGroupsStructure.getBoardsFilter())
-                .appendQueryParameter(FilterResolutionKeys.PARAMETER_KEY, filterGroupsStructure.getResolutionFilter().getValue())
-                .appendQueryParameter(FilterPurityKeys.PARAMETER_KEY, filterGroupsStructure.getPurityFilter())
-                .appendQueryParameter(FilterAspectRatioKeys.PARAMETER_KEY, filterGroupsStructure.getAspectRatioFilter().getValue())
-                .appendQueryParameter("sorting", sorting)
-                .appendQueryParameter("order", "desc")
-                .appendQueryParameter("page", page+"")
-        ;
+        builder.scheme("https").authority("wallhaven.cc");
+
+        if (PATH_TOPLIST.equalsIgnoreCase(path)) {
+            // For toplist, use the direct path with just page number and filters
+            builder.appendEncodedPath(path)
+                  .appendQueryParameter(FilterBoardsKeys.PARAMETER_KEY, filterGroupsStructure.getBoardsFilter())
+                  .appendQueryParameter(FilterPurityKeys.PARAMETER_KEY, filterGroupsStructure.getPurityFilter())
+                  .appendQueryParameter("page", page+"");
+        } else {
+            // For other paths (search, random, latest), use the search endpoint
+            String sorting = "views";
+            if (PATH_SEARCH.equalsIgnoreCase(path)) {
+                sorting = "relevance";
+            } else if (PATH_RANDOM.equalsIgnoreCase(path)) {
+                sorting = "random";
+            } else if (PATH_LATEST.equalsIgnoreCase(path)) {
+                sorting = "date_added";
+            }
+
+            builder.appendEncodedPath("search")
+                  .appendQueryParameter(FilterBoardsKeys.PARAMETER_KEY, filterGroupsStructure.getBoardsFilter())
+                  .appendQueryParameter(FilterResolutionKeys.PARAMETER_KEY, filterGroupsStructure.getResolutionFilter().getValue())
+                  .appendQueryParameter(FilterPurityKeys.PARAMETER_KEY, filterGroupsStructure.getPurityFilter())
+                  .appendQueryParameter(FilterAspectRatioKeys.PARAMETER_KEY, filterGroupsStructure.getAspectRatioFilter().getValue())
+                  .appendQueryParameter("sorting", sorting)
+                  .appendQueryParameter("order", "desc")
+                  .appendQueryParameter("page", page+"");
+        }
 
         return builder.build();
     }

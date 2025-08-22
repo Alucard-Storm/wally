@@ -17,10 +17,12 @@
 package com.musenkishi.wally.fragments;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -29,11 +31,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.util.Log;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.view.ActionMode;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.util.SparseBooleanArray;
+import java.io.IOException;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -219,9 +223,15 @@ public class SavedImagesFragment extends GridFragment implements Handler.Callbac
     }
 
     private boolean hasStoragePermission() {
-        return Build.VERSION.SDK_INT < 23
-                || (getActivity().checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED);
+        if (Build.VERSION.SDK_INT >= 33) {
+            return getActivity().checkSelfPermission(android.Manifest.permission.READ_MEDIA_IMAGES)
+                    == PackageManager.PERMISSION_GRANTED;
+        } else if (Build.VERSION.SDK_INT >= 23) {
+            return getActivity().checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED;
+        } else {
+            return true; // Permission is automatically granted on sdk < 23
+        }
     }
 
     @Override
@@ -236,26 +246,57 @@ public class SavedImagesFragment extends GridFragment implements Handler.Callbac
         switch (msg.what) {
             case GET_IMAGES_FROM_STORAGE:
                 if (getActivity() != null) {
-                    String[] projection = {MediaStore.Images.Media._ID};
+                    String[] projection;
+                    String selection;
+                    String[] selectionArgs;
+                    
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        // For Android 10 and above
+                        projection = new String[]{
+                            MediaStore.Images.Media._ID,
+                            MediaStore.Images.Media.RELATIVE_PATH,
+                            MediaStore.Images.Media.DISPLAY_NAME,
+                            MediaStore.Images.Media.DATE_ADDED
+                        };
+                        selection = MediaStore.Images.Media.RELATIVE_PATH + " LIKE ? AND " +
+                                  MediaStore.Images.Media.MIME_TYPE + " LIKE ?";
+                        selectionArgs = new String[]{"Pictures/Wally/%", "image/%"};
+                    } else {
+                        // For Android 9 and below
+                        projection = new String[]{
+                            MediaStore.Images.Media._ID,
+                            MediaStore.Images.Media.DATA,
+                            MediaStore.Images.Media.DISPLAY_NAME,
+                            MediaStore.Images.Media.DATE_ADDED
+                        };
+                        selection = MediaStore.Images.Media.DATA + " LIKE ? AND " +
+                                  MediaStore.Images.Media.MIME_TYPE + " LIKE ?";
+                        selectionArgs = new String[]{"%/Wally/%", "image/%"};
+                    }
+
                     ContentResolver contentResolver = getActivity().getContentResolver();
                     Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
-                    cursor = contentResolver.query(
-                            mImageUri,
-                            projection,
-                            MediaStore.Images.Media.DATA + " like ? ",
-                            new String[]{"%/Wally/%"},
-                            MediaStore.Audio.Media.DATE_ADDED + " DESC");
+                    try {
+                        cursor = contentResolver.query(
+                                mImageUri,
+                                projection,
+                                selection,
+                                selectionArgs,
+                                MediaStore.Images.Media.DATE_ADDED + " DESC");
 
-                    initObserver(cursor);
+                        initObserver(cursor);
 
-                    int what;
-                    if (recyclerSavedImagesAdapter == null) {
-                        what = SET_IMAGES_TO_ADAPTER;
-                    } else {
-                        what = UPDATE_ADAPTER;
+                        int what;
+                        if (recyclerSavedImagesAdapter == null) {
+                            what = SET_IMAGES_TO_ADAPTER;
+                        } else {
+                            what = UPDATE_ADAPTER;
+                        }
+                        uiHandler.sendEmptyMessage(what);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    uiHandler.sendEmptyMessage(what);
                 }
                 break;
 
@@ -282,15 +323,63 @@ public class SavedImagesFragment extends GridFragment implements Handler.Callbac
 
     private ArrayList<Uri> getFileUrisFromCursor(Cursor cursor) {
         ArrayList<Uri> filePaths = new ArrayList<Uri>();
-        if (cursor != null) {
-            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
-            while (cursor.moveToNext()) {
-                int imageID = cursor.getInt(columnIndex);
-                Uri uri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, Integer.toString(imageID));
-                filePaths.add(uri);
+        if (cursor != null && cursor.getCount() > 0) {
+            try {
+                int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+                
+                while (cursor.moveToNext()) {
+                    try {
+                        long id = cursor.getLong(idColumn);
+                        Uri contentUri = ContentUris.withAppendedId(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                        
+                        // Verify the image still exists
+                        if (contentUriExists(contentUri)) {
+                            filePaths.add(contentUri);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        continue;
+                    }
+                }
+                
+                // Reset cursor position
+                cursor.moveToPosition(-1);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return filePaths;
+    }
+    
+    private boolean contentUriExists(Uri uri) {
+        if (uri == null) return false;
+        
+        try {
+            ContentResolver resolver = getActivity().getContentResolver();
+            String[] projection = { MediaStore.Images.Media._ID };
+            Cursor cursor = resolver.query(uri, projection, null, null, null);
+            if (cursor != null) {
+                boolean exists = cursor.moveToFirst();
+                cursor.close();
+                if (exists) {
+                    try {
+                        // Double check if the file is actually readable
+                        AssetFileDescriptor afd = resolver.openAssetFileDescriptor(uri, "r");
+                        if (afd != null) {
+                            afd.close();
+                            return true;
+                        }
+                    } catch (IOException e) {
+                        Log.w(TAG, "File exists in MediaStore but cannot be opened: " + uri, e);
+                        return false;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Error checking if file exists: " + uri, e);
+        }
+        return false;
     }
 
     private void checkIfAddedOrRemovedItem(ArrayList<Uri> oldList, ArrayList<Uri> newList) {

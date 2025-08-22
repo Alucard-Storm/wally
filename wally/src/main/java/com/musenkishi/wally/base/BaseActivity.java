@@ -29,6 +29,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Environment;
+import java.io.File;
 import androidx.annotation.NonNull;
 import android.widget.Toast;
 import android.graphics.Bitmap;
@@ -85,20 +89,73 @@ public abstract class BaseActivity extends AppCompatActivity {
                     query.setFilterById(downloadId);
                     try {
                         android.database.Cursor cursor = downloadManager.query(query);
-                        if (cursor != null && cursor.moveToFirst()) {
-                            int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-                            if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                                handleReceivedIntent(context, intent);
+                        if (cursor != null) {
+                            try {
+                                if (cursor.moveToFirst()) {
+                                    int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                                    int uriIndex = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
+                                    if (status == DownloadManager.STATUS_SUCCESSFUL && uriIndex != -1) {
+                                        String downloadedFilePath = cursor.getString(uriIndex);
+                                        if (downloadedFilePath != null) {
+                                            // Trigger MediaStore scan for the downloaded file
+                                            triggerMediaScan(context, Uri.parse(downloadedFilePath).getPath());
+                                        }
+                                        handleReceivedIntent(context, intent);
+                                    }
+                                }
+                            } finally {
+                                cursor.close();
                             }
-                            cursor.close();
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Log.e("BaseActivity", "Error processing download: ", e);
                     }
                 }
             }
         }
     };
+
+    private void triggerMediaScan(Context context, String path) {
+        try {
+            if (path != null) {
+                // Trigger both specific file scan and full directory scan
+                MediaScannerConnection.scanFile(context, 
+                    new String[]{path}, 
+                    null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
+                        @Override
+                        public void onScanCompleted(String path, Uri uri) {
+                            Log.d("MediaScan", "Scanned: " + path);
+                            // Also scan the entire Wally directory
+                            String wallyDir = Environment.getExternalStoragePublicDirectory(
+                                Environment.DIRECTORY_PICTURES).toString() + "/Wally";
+                            scanDirectory(context, wallyDir);
+                        }
+                    }
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void scanDirectory(Context context, String directoryPath) {
+        try {
+            File directory = new File(directoryPath);
+            if (directory.exists() && directory.isDirectory()) {
+                File[] files = directory.listFiles();
+                if (files != null) {
+                    String[] paths = new String[files.length];
+                    for (int i = 0; i < files.length; i++) {
+                        paths[i] = files[i].getAbsolutePath();
+                    }
+                    MediaScannerConnection.scanFile(context, paths, null, null);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     protected abstract void handleReceivedIntent(Context context, Intent intent);
 
