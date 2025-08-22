@@ -76,9 +76,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
 
-    private String downloadCompleteIntentName = DownloadManager.ACTION_DOWNLOAD_COMPLETE;
-    private IntentFilter downloadCompleteIntentFilter = new IntentFilter(downloadCompleteIntentName);
-    private BroadcastReceiver downloadCompleteReceiver = new BroadcastReceiver() {
+    private final String downloadCompleteIntentName = DownloadManager.ACTION_DOWNLOAD_COMPLETE;
+    private final IntentFilter downloadCompleteIntentFilter = new IntentFilter(downloadCompleteIntentName);
+    private final BroadcastReceiver downloadCompleteReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(intent.getAction())) {

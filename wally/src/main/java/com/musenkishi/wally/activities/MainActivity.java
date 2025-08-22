@@ -56,7 +56,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setToolbar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setElevation(12.0f);
@@ -68,7 +68,7 @@ public class MainActivity extends BaseActivity {
         fileReceiver = new FileReceiver();
         filtersChangeReceiver = new FiltersChangeReceiver();
 
-        viewPager = (ViewPager) findViewById(R.id.fragment_pager);
+        viewPager = findViewById(R.id.fragment_pager);
         initiatePagerAdapter();
 
         viewPager.setAdapter(pagerAdapter);

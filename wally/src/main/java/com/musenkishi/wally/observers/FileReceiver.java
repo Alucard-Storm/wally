@@ -44,7 +44,7 @@ public class FileReceiver extends BroadcastReceiver implements Handler.Callback 
     public static final int MSG_GET_FILES = 57348;
     public static final int MSG_SEND_FILES = 57349;
 
-    private ArrayList<OnFileChangeListener> onFileChangeListeners;
+    private final ArrayList<OnFileChangeListener> onFileChangeListeners;
     private final Handler uiHandler;
     private final Handler backgroundHandler;
     private Map<String, Boolean> existingFiles;

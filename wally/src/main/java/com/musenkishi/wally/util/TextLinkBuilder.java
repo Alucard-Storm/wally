@@ -33,13 +33,13 @@ public class TextLinkBuilder {
     private int start = 0;
     private int end = 0;
 
-    private String text;
+    private final String text;
     private int color = 0xFF0E84FC; //default color which is light blue
     private OnTextClickedListener onTextClickedListener;
 
-    private Context context;
+    private final Context context;
     private String font = null;
-    private String TAG = "TextLinkBuilder";
+    private final String TAG = "TextLinkBuilder";
 
     public interface OnTextClickedListener{
         void onClick(View textView);

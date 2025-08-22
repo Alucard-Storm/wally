@@ -46,20 +46,20 @@ public class DataProvider {
 
     private static final String TAG = "DataProvider";
     private final Context context;
-    private SharedPreferencesDataProvider sharedPreferencesDataProvider;
-    private DownloadManager downloadManager;
-    private Parser parser;
+    private final SharedPreferencesDataProvider sharedPreferencesDataProvider;
+    private final DownloadManager downloadManager;
+    private final Parser parser;
 
     public interface OnImagesReceivedListener {
-        abstract void onImagesReceived(ArrayList<Image> images);
+        void onImagesReceived(ArrayList<Image> images);
 
-        abstract void onError(DataProviderError dataProviderError);
+        void onError(DataProviderError dataProviderError);
     }
 
     public interface OnPageReceivedListener {
-        abstract void onPageReceived(ImagePage imagePage);
+        void onPageReceived(ImagePage imagePage);
 
-        abstract void onError(DataProviderError dataProviderError);
+        void onError(DataProviderError dataProviderError);
     }
 
     public DataProvider(Context context, ExceptionReporter.OnReportListener onReportListener) {

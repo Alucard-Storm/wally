@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class ListFilterGroup extends FilterGroup {
 
-    private List<Filter<String, String>> filters;
+    private final List<Filter<String, String>> filters;
     private Filter<String, String> selectedFilter;
 
     public ListFilterGroup(String tag, List<Filter<String, String>> filters) {

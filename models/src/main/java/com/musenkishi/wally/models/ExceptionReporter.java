@@ -22,12 +22,12 @@ package com.musenkishi.wally.models;
  */
 public class ExceptionReporter {
 
-    private Class fromClass;
-    private String customMessage;
-    private String exceptionMessage;
+    private final Class fromClass;
+    private final String customMessage;
+    private final String exceptionMessage;
 
     public interface OnReportListener {
-        abstract void report(Class fromClass, String reason, String exceptionMessage);
+        void report(Class fromClass, String reason, String exceptionMessage);
     }
 
     public ExceptionReporter(Class fromClass, String customMessage, String exceptionMessage) {

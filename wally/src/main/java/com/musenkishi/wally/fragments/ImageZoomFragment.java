@@ -176,7 +176,7 @@ public class ImageZoomFragment extends DialogFragment {
             dialog.getWindow().setAttributes(layoutParams);
             initToolbar(dialog);
             progressBar = dialog.findViewById(R.id.zoom_loader);
-            zoomableImageView = (PhotoView) dialog.findViewById(R.id.image_zoom_photoview);
+            zoomableImageView = dialog.findViewById(R.id.image_zoom_photoview);
             if (bitmap != null) {
                 if (rect != null) {
                     animateIn(dialog);
@@ -373,10 +373,10 @@ public class ImageZoomFragment extends DialogFragment {
     }
 
     private void initToolbar(Dialog dialog) {
-        toolBar = (ViewGroup) dialog.findViewById(R.id.zoom_toolbar);
+        toolBar = dialog.findViewById(R.id.zoom_toolbar);
         toolBar.setVisibility(toolBarVisibility);
         if (fileUri != null) {
-            Button setAsButton = (Button) toolBar.findViewById(R.id.toolbar_set_as);
+            Button setAsButton = toolBar.findViewById(R.id.toolbar_set_as);
             setAsButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -385,7 +385,7 @@ public class ImageZoomFragment extends DialogFragment {
             });
         }
         if (contentUri != null) {
-            Button deleteButton = (Button) toolBar.findViewById(R.id.toolbar_delete);
+            Button deleteButton = toolBar.findViewById(R.id.toolbar_delete);
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

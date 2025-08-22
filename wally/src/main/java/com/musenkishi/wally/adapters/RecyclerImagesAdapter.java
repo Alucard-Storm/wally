@@ -70,7 +70,7 @@ public class RecyclerImagesAdapter extends RecyclerView.Adapter<RecyclerImagesAd
     private int barHeight;
 
     private HashMap<String, Boolean> existingFiles = new HashMap<String, Boolean>();
-    private SparseArray<ValueAnimator> valueAnimators = new SparseArray<ValueAnimator>();
+    private final SparseArray<ValueAnimator> valueAnimators = new SparseArray<ValueAnimator>();
 
     /**
      * Don't use this constructor.
@@ -184,11 +184,9 @@ public class RecyclerImagesAdapter extends RecyclerView.Adapter<RecyclerImagesAd
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                if (viewHolder.imageButton.getDrawable() instanceof LayerDrawable) {
-                    LayerDrawable layerDrawable = (LayerDrawable) viewHolder.imageButton.getDrawable();
+                if (viewHolder.imageButton.getDrawable() instanceof LayerDrawable layerDrawable) {
                     layerDrawable.getDrawable(0).mutate().setColorFilter(viewHolder.textViewResolution.getCurrentTextColor(), PorterDuff.Mode.MULTIPLY);
-                    if (layerDrawable.getDrawable(layerDrawable.getNumberOfLayers()-1) instanceof ClipDrawable) {
-                        ClipDrawable clipDrawable = (ClipDrawable) layerDrawable.getDrawable(layerDrawable.getNumberOfLayers()-1);
+                    if (layerDrawable.getDrawable(layerDrawable.getNumberOfLayers() - 1) instanceof ClipDrawable clipDrawable) {
                         clipDrawable.mutate().setColorFilter(viewHolder.textViewResolution.getCurrentTextColor(), PorterDuff.Mode.MULTIPLY);
                         clipDrawable.mutate().setLevel((Integer) animation.getAnimatedValue());
                         float reversedValue = 10000f - ((Integer) animation.getAnimatedValue());
@@ -258,7 +256,7 @@ public class RecyclerImagesAdapter extends RecyclerView.Adapter<RecyclerImagesAd
     }
 
     public interface OnSaveButtonClickedListener {
-        abstract void onSaveButtonClicked(Image image);
+        void onSaveButtonClicked(Image image);
     }
 
     private class NoDataException extends NullPointerException {
@@ -277,10 +275,10 @@ public class RecyclerImagesAdapter extends RecyclerView.Adapter<RecyclerImagesAd
         public ViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;
-            imageView = (ImageView) itemView.findViewById(R.id.thumb_image_view);
-            imageButton = (ImageButton) itemView.findViewById(R.id.thumb_button_heart);
-            textViewResolution = (TextView) itemView.findViewById(R.id.thumb_text_resolution);
-            bottomBar = (ViewGroup) itemView.findViewById(R.id.thumb_bottom_view);
+            imageView = itemView.findViewById(R.id.thumb_image_view);
+            imageButton = itemView.findViewById(R.id.thumb_button_heart);
+            textViewResolution = itemView.findViewById(R.id.thumb_text_resolution);
+            bottomBar = itemView.findViewById(R.id.thumb_bottom_view);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -293,7 +291,7 @@ public class RecyclerImagesAdapter extends RecyclerView.Adapter<RecyclerImagesAd
     }
 
     public interface OnItemClickListener {
-        abstract void onItemClick(View view, int position);
+        void onItemClick(View view, int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -301,7 +299,7 @@ public class RecyclerImagesAdapter extends RecyclerView.Adapter<RecyclerImagesAd
     }
 
     public interface OnGetViewListener {
-        abstract void onBindView(int position);
+        void onBindView(int position);
     }
 
     public void setOnGetViewListener(OnGetViewListener onGetViewListener) {

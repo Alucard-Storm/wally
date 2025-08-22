@@ -16,6 +16,8 @@
 
 package com.musenkishi.wally.models;
 
+import java.util.Objects;
+
 /**
  * A class for defining Filter items.
  * Created by Musenkishi on 2014-03-12 22:20.
@@ -69,15 +71,11 @@ public class Filter<K, V> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Filter)) return false;
-
-        Filter filter = (Filter) o;
+        if (!(o instanceof Filter filter)) return false;
 
         if (isCustom != filter.isCustom) return false;
-        if (key != null ? !key.equals(filter.key) : filter.key != null) return false;
-        if (value != null ? !value.equals(filter.value) : filter.value != null) return false;
-
-        return true;
+        if (!Objects.equals(key, filter.key)) return false;
+        return Objects.equals(value, filter.value);
     }
 
     @Override

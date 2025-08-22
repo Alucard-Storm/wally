@@ -29,7 +29,7 @@ import com.musenkishi.wally.fragments.ToplistFragment;
  * Created by Musenkishi on 2014-05-26 17:26.
  */
 public class SmartFragmentPagerAdapter extends SmartFragmentStatePagerAdapter {
-    private static int NUM_ITEMS = 5;
+    private static final int NUM_ITEMS = 5;
 
     public SmartFragmentPagerAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);

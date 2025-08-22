@@ -32,7 +32,7 @@ public class FiltersChangeReceiver extends BroadcastReceiver {
 
     public static final String FILTERS_CHANGED = "com.musenkishi.wally.observers.FILTERS_CHANGED";
 
-    private ArrayList<OnFiltersChangeListener> onFiltersChangeListeners;
+    private final ArrayList<OnFiltersChangeListener> onFiltersChangeListeners;
 
     public interface OnFiltersChangeListener{
         void onFiltersChange();

@@ -81,15 +81,11 @@ public class FilterBoards {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof FilterBoards)) return false;
-
-        FilterBoards that = (FilterBoards) o;
+        if (!(o instanceof FilterBoards that)) return false;
 
         if (animeChecked != that.animeChecked) return false;
         if (generalChecked != that.generalChecked) return false;
-        if (peopleChecked != that.peopleChecked) return false;
-
-        return true;
+        return peopleChecked == that.peopleChecked;
     }
 
     @Override

@@ -242,8 +242,8 @@ public class NetworkDataProvider {
     }
 
     public interface OnDataReceivedListener {
-        abstract void onData(String data, String url);
+        void onData(String data, String url);
 
-        abstract void onError(DataProviderError error);
+        void onError(DataProviderError error);
     }
 }

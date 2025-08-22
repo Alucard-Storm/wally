@@ -384,21 +384,20 @@ public class LatestFragment extends BaseFilterFragment implements RecyclerImages
         imagesAdapter.setOnItemClickListener(new RecyclerImagesAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Image image = (Image) imagesAdapter.getItem(position);
+                Image image = imagesAdapter.getItem(position);
                 Intent intent = new Intent(Intent.ACTION_VIEW,
                         Uri.parse(image.imagePageURL()),
                         view.getContext(),
                         ImageDetailsActivity.class);
 
-                ImageView thumbnailImageView = (ImageView) view.findViewById(R.id.thumb_image_view);
+                ImageView thumbnailImageView = view.findViewById(R.id.thumb_image_view);
 
                 Bitmap thumb = null;
 
                 intent.putExtra(ImageDetailsActivity.INTENT_EXTRA_IMAGE, image);
 
                 if (thumbnailImageView != null && thumbnailImageView.getDrawable() != null
-                        && thumbnailImageView.getDrawable() instanceof BitmapDrawable) {
-                    BitmapDrawable glideBitmapDrawable = (BitmapDrawable) thumbnailImageView.getDrawable();
+                        && thumbnailImageView.getDrawable() instanceof BitmapDrawable glideBitmapDrawable) {
                     thumb = glideBitmapDrawable.getBitmap();
                 } else if (thumbnailImageView != null && thumbnailImageView.getDrawable() != null
                         && thumbnailImageView.getDrawable() instanceof TransitionDrawable) {

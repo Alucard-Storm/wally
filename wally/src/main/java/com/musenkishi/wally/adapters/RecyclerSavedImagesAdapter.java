@@ -44,7 +44,7 @@ public class RecyclerSavedImagesAdapter extends RecyclerView.Adapter<RecyclerSav
 
     private OnItemClickListener onItemClickListener;
 
-    private SparseBooleanArrayParcelable selectedItems;
+    private final SparseBooleanArrayParcelable selectedItems;
 
     /**
      * Don't use this constructor.
@@ -75,7 +75,7 @@ public class RecyclerSavedImagesAdapter extends RecyclerView.Adapter<RecyclerSav
         convertView.getLayoutParams().height = itemSize;
 
         ViewHolder viewHolder = new ViewHolder(convertView);
-        viewHolder.imageView = (ImageView) convertView.findViewById(R.id.thumb_image_view);
+        viewHolder.imageView = convertView.findViewById(R.id.thumb_image_view);
 
         return viewHolder;
     }
@@ -114,7 +114,7 @@ public class RecyclerSavedImagesAdapter extends RecyclerView.Adapter<RecyclerSav
         public ViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;
-            imageView = (ImageView) itemView.findViewById(R.id.thumb_image_view);
+            imageView = itemView.findViewById(R.id.thumb_image_view);
             if (onItemClickListener != null) {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -161,8 +161,8 @@ public class RecyclerSavedImagesAdapter extends RecyclerView.Adapter<RecyclerSav
     }
 
     public interface OnItemClickListener {
-        abstract void onClick(View view, int position);
-        abstract void onLongClick(View view, int position);
+        void onClick(View view, int position);
+        void onLongClick(View view, int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {

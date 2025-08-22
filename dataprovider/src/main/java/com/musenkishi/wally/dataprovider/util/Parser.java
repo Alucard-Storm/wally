@@ -44,7 +44,7 @@ import static com.musenkishi.wally.dataprovider.NetworkDataProvider.WALLHAVEN_BA
  */
 public class Parser {
 
-    private ExceptionReporter.OnReportListener onReportListener;
+    private final ExceptionReporter.OnReportListener onReportListener;
 
     public Parser(ExceptionReporter.OnReportListener onReportListener) {
         this.onReportListener = onReportListener;

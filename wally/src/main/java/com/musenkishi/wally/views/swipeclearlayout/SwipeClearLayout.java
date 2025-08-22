@@ -75,7 +75,7 @@ public class SwipeClearLayout extends RelativeLayout {
     private static final int CIRCLE_DEFAULT_COLOR = Color.MAGENTA;
     private static final int DEFAULT_ANIMATION_DURATION = 300*2;
 
-    private View circle;
+    private final View circle;
     private int circleTopMargin = 0;
     private int circleColor;
     private int duration = DEFAULT_ANIMATION_DURATION;
@@ -89,10 +89,10 @@ public class SwipeClearLayout extends RelativeLayout {
     private MotionEvent downEvent;
     private int from;
     private boolean refreshing = false;
-    private int touchSlop;
+    private final int touchSlop;
     private float distanceToTriggerSync = -1;
     private float prevY;
-    private int mediumAnimationDuration;
+    private final int mediumAnimationDuration;
     private float currPercentage = 0;
     private int currentTargetOffsetTop;
     // Target is returning to its start offset because it was cancelled or a
@@ -114,7 +114,7 @@ public class SwipeClearLayout extends RelativeLayout {
             int offset = targetTop - circle.getTop();
             final int currentTop = circle.getTop();
             if (offset + currentTop < 0) {
-                offset = 0 - currentTop;
+                offset = -currentTop;
             }
             setTargetOffsetTopAndBottom(offset);
         }
@@ -424,8 +424,7 @@ public class SwipeClearLayout extends RelativeLayout {
      */
     public boolean canChildScrollUp() {
         if (Build.VERSION.SDK_INT < 14) {
-            if (target instanceof AbsListView) {
-                final AbsListView absListView = (AbsListView) target;
+            if (target instanceof AbsListView absListView) {
                 return absListView.getChildCount() > 0
                         && (absListView.getFirstVisiblePosition() > 0 || absListView.getChildAt(0)
                         .getTop() < absListView.getPaddingTop());
@@ -644,7 +643,7 @@ public class SwipeClearLayout extends RelativeLayout {
      * triggers a refresh should implement this interface.
      */
     public interface OnRefreshListener {
-        public void onRefresh();
+        void onRefresh();
     }
 
     /**
@@ -657,7 +656,7 @@ public class SwipeClearLayout extends RelativeLayout {
          * @param progress How much is left (in percent) until a refresh is triggered.
          * @param pixels How much the list has moved in pixels
          */
-        abstract void onSwipe(int progress, int pixels);
+        void onSwipe(int progress, int pixels);
     }
 
     /**

@@ -117,11 +117,11 @@ public class MaterialDialogFragment extends DialogFragment {
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.setContentView(R.layout.dialog_base_material);
-            textViewTitle = (TextView) dialog.findViewById(R.id.dialog_title);
-            buttonNegative = (Button) dialog.findViewById(R.id.dialog_button_negative);
-            buttonPositive = (Button) dialog.findViewById(R.id.dialog_button_positive);
-            scrollView = (ScrollView) dialog.findViewById(R.id.dialog_scrollview);
-            viewStub = (ViewStub) dialog.findViewById(R.id.dialog_viewstub);
+            textViewTitle = dialog.findViewById(R.id.dialog_title);
+            buttonNegative = dialog.findViewById(R.id.dialog_button_negative);
+            buttonPositive = dialog.findViewById(R.id.dialog_button_positive);
+            scrollView = dialog.findViewById(R.id.dialog_scrollview);
+            viewStub = dialog.findViewById(R.id.dialog_viewstub);
 
             setupViews(dialog.getContext());
             hideEmptyViews();

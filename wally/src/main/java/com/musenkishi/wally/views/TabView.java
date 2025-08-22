@@ -42,8 +42,8 @@ import com.musenkishi.wally.R;
  */
 public class TabView extends LinearLayout {
 
-    private ImageView imageView;
-    private TextView textView;
+    private final ImageView imageView;
+    private final TextView textView;
 
     public TabView(Context context) {
         this(context, null);
@@ -56,8 +56,8 @@ public class TabView extends LinearLayout {
     public TabView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         LayoutInflater.from(context).inflate(R.layout.tab_view_merge, this);
-        imageView = (ImageView) findViewById(R.id.image);
-        textView = (TextView) findViewById(R.id.text);
+        imageView = findViewById(R.id.image);
+        textView = findViewById(R.id.text);
         setAttributes(context, attrs);
         setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.app_bar_height));
         setGravity(Gravity.CENTER);
@@ -133,11 +133,7 @@ public class TabView extends LinearLayout {
     private void updateHint() {
         boolean needHint = false;
         if (textView == null || textView.getVisibility() == View.GONE) {
-            if (!TextUtils.isEmpty(getContentDescription())) {
-                needHint = true;
-            } else {
-                needHint = false;
-            }
+            needHint = !TextUtils.isEmpty(getContentDescription());
         }
 
         if (needHint) {
@@ -148,7 +144,7 @@ public class TabView extends LinearLayout {
         }
     }
 
-    private OnLongClickListener mOnLongClickListener = new OnLongClickListener() {
+    private final OnLongClickListener mOnLongClickListener = new OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
             final int[] screenPos = new int[2];

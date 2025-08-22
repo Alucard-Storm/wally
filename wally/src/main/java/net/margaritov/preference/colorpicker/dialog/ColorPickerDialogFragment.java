@@ -53,8 +53,8 @@ public class ColorPickerDialogFragment extends DialogFragment implements ColorPi
     private int initialColor = Color.BLACK;
 
     public interface OnDialogButtonClickedListener{
-        abstract void onPositiveButtonClicked(DialogFragment dialogFragment);
-        abstract void onNegativeButtonClicked(DialogFragment dialogFragment);
+        void onPositiveButtonClicked(DialogFragment dialogFragment);
+        void onNegativeButtonClicked(DialogFragment dialogFragment);
     }
 
     public ColorPickerDialogFragment() {
@@ -84,9 +84,9 @@ public class ColorPickerDialogFragment extends DialogFragment implements ColorPi
             dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             dialog.setContentView(R.layout.view_color_picker_dialog);
 
-            colorPicker = (ColorPickerView) dialog.findViewById(R.id.color_picker_view);
-            oldColor = (ColorPanelView) dialog.findViewById(R.id.color_panel_old);
-            newColor = (ColorPanelView) dialog.findViewById(R.id.color_panel_new);
+            colorPicker = dialog.findViewById(R.id.color_picker_view);
+            oldColor = dialog.findViewById(R.id.color_panel_old);
+            newColor = dialog.findViewById(R.id.color_panel_new);
             ((LinearLayout) oldColor.getParent()).setPadding(Math
                     .round(colorPicker.getDrawingOffset()), 0, Math
                     .round(colorPicker.getDrawingOffset()), 0);
@@ -96,8 +96,8 @@ public class ColorPickerDialogFragment extends DialogFragment implements ColorPi
                 colorPicker.setColor(initialColor, true);
             }
 
-            buttonNegative = (Button) dialog.findViewById(R.id.dialog_button_negative);
-            buttonPositive = (Button) dialog.findViewById(R.id.dialog_button_positive);
+            buttonNegative = dialog.findViewById(R.id.dialog_button_negative);
+            buttonPositive = dialog.findViewById(R.id.dialog_button_positive);
 
             buttonNegative.setOnClickListener(new View.OnClickListener() {
                 @Override

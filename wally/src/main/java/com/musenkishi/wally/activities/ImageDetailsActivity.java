@@ -146,7 +146,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_details);
 
-        setToolbar((Toolbar) findViewById(R.id.toolbar));
+        setToolbar(findViewById(R.id.toolbar));
 
         if (getToolbar() != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -337,23 +337,23 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
     }
 
     private void setupViews() {
-        scrollView = (ObservableScrollView) findViewById(R.id.image_details_scrollview);
-        imageHolder = (ViewGroup) findViewById(R.id.image_details_imageview_holder);
-        photoView = (ImageView) findViewById(R.id.image_details_imageview);
-        buttonFullscreen = (ImageButton) findViewById(R.id.image_details_button_fullscreen);
-        loader = (ProgressBar) findViewById(R.id.image_details_loader);
-        textViewUploader = (TextView) findViewById(R.id.image_details_uploader);
-        textViewUploadDate = (TextView) findViewById(R.id.image_details_upload_date);
-        textViewSource = (TextView) findViewById(R.id.image_details_source);
-        textViewResolution = (TextView) findViewById(R.id.image_details_resolution);
-        textViewCategory = (TextView) findViewById(R.id.image_details_category);
-        textViewRating = (TextView) findViewById(R.id.image_details_rating);
-        flowLayoutTags = (FlowLayout) findViewById(R.id.image_details_tags_layout);
-        buttonSetAs = (Button) findViewById(R.id.toolbar_set_as);
-        buttonSave = (Button) findViewById(R.id.toolbar_save);
-        toolbar = (ViewGroup) findViewById(R.id.image_details_toolbar);
-        photoLayoutHolder = (ViewGroup) findViewById(R.id.image_details_photo_layout_holder);
-        specsLayout = (ViewGroup) findViewById(R.id.image_details_specs);
+        scrollView = findViewById(R.id.image_details_scrollview);
+        imageHolder = findViewById(R.id.image_details_imageview_holder);
+        photoView = findViewById(R.id.image_details_imageview);
+        buttonFullscreen = findViewById(R.id.image_details_button_fullscreen);
+        loader = findViewById(R.id.image_details_loader);
+        textViewUploader = findViewById(R.id.image_details_uploader);
+        textViewUploadDate = findViewById(R.id.image_details_upload_date);
+        textViewSource = findViewById(R.id.image_details_source);
+        textViewResolution = findViewById(R.id.image_details_resolution);
+        textViewCategory = findViewById(R.id.image_details_category);
+        textViewRating = findViewById(R.id.image_details_rating);
+        flowLayoutTags = findViewById(R.id.image_details_tags_layout);
+        buttonSetAs = findViewById(R.id.toolbar_set_as);
+        buttonSave = findViewById(R.id.toolbar_save);
+        toolbar = findViewById(R.id.image_details_toolbar);
+        photoLayoutHolder = findViewById(R.id.image_details_photo_layout_holder);
+        specsLayout = findViewById(R.id.image_details_specs);
         detailsViewGroup = findViewById(R.id.image_details_layout);
 
         specsLayout.setAlpha(0.0f);
@@ -467,7 +467,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         if (this.palette == null && flowLayoutTags.getChildCount() > 0) {
             for (int i = 0; i < flowLayoutTags.getChildCount(); i++) {
                 View tagView = flowLayoutTags.getChildAt(i);
-                TextView tagTextView = (TextView) tagView.findViewById(R.id.tag_item_text);
+                TextView tagTextView = tagView.findViewById(R.id.tag_item_text);
 
                 PaletteLoader.with(this, imagePage.imagePath().toString())
                         .load(bitmap)
@@ -951,7 +951,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                         flowLayoutTags.removeAllViews();
                         for (final Tag tag : imagePage.tags()) {
                             View tagView = getLayoutInflater().inflate(R.layout.view_tag_item, flowLayoutTags, false);
-                            TextView tagTextView = (TextView) tagView.findViewById(R.id.tag_item_text);
+                            TextView tagTextView = tagView.findViewById(R.id.tag_item_text);
                             tagTextView.setText(tag.name());
 
                             flowLayoutTags.addView(tagView);

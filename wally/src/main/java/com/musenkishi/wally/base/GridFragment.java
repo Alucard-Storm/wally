@@ -55,8 +55,8 @@ public abstract class GridFragment extends BaseFragment {
      * @param rootView
      */
     protected void onCreateView(@NonNull View rootView) {
-        errorLayout = (ViewGroup) rootView.findViewById(R.id.error_layout);
-        gridView = (AutoGridView) rootView.findViewById(R.id.listview);
+        errorLayout = rootView.findViewById(R.id.error_layout);
+        gridView = rootView.findViewById(R.id.listview);
 
         gridLayoutManager = new GridLayoutManager(rootView.getContext(), 2);
         gridView.setLayoutManager(gridLayoutManager);
@@ -96,7 +96,7 @@ public abstract class GridFragment extends BaseFragment {
         final ViewTreeObserver viewTreeObserver = gridView.getViewTreeObserver();
         if (viewTreeObserver != null) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                int lastWidth = -1;
+                final int lastWidth = -1;
 
                 @Override
                 public void onGlobalLayout() {
@@ -145,9 +145,9 @@ public abstract class GridFragment extends BaseFragment {
             hideLoader();
             gridView.setVisibility(View.GONE);
 
-            TextView message = (TextView) errorLayout.findViewById(R.id.error_backend_textview_message);
-            TextView status = (TextView) errorLayout.findViewById(R.id.error_backend_textview_status);
-            TextView checkBackend = (TextView) errorLayout.findViewById(R.id.error_backend_textview_check_backend);
+            TextView message = errorLayout.findViewById(R.id.error_backend_textview_message);
+            TextView status = errorLayout.findViewById(R.id.error_backend_textview_status);
+            TextView checkBackend = errorLayout.findViewById(R.id.error_backend_textview_check_backend);
 
             if (numberOfRetries >= 3) {
                 TextLinkBuilder backendTextLinkBuilder = new TextLinkBuilder(

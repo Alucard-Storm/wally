@@ -47,7 +47,7 @@ public class SharedPreferencesDataProvider {
     public static final int CRASH_LOGGING_NOT_APPROVED = 193785;
     public static final int CRASH_LOGGING_APPROVED = 193786;
 
-    private SharedPreferences sharedPreferences;
+    private final SharedPreferences sharedPreferences;
 
     public SharedPreferences getPrefs() {
         return sharedPreferences;

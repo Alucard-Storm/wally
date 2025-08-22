@@ -24,7 +24,7 @@ import android.view.View;
  */
 public class ScaleInOutItemAnimator extends BaseItemAnimator {
 
-    private float DEFAULT_SCALE_INITIAL = 0.6f;
+    private final float DEFAULT_SCALE_INITIAL = 0.6f;
 
     private float mInitialScaleX = DEFAULT_SCALE_INITIAL;
     private float mInitialScaleY = DEFAULT_SCALE_INITIAL;

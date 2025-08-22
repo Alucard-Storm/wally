@@ -64,7 +64,7 @@ import net.margaritov.preference.colorpicker.drawable.AlphaPatternDrawable;
 public class ColorPickerView extends View{
 
 	public interface OnColorChangedListener{
-		public void onColorChanged(int newColor);		
+		void onColorChanged(int newColor);
 	}
 		
 	private final static int	PANEL_SAT_VAL = 0;
@@ -333,7 +333,7 @@ public class ColorPickerView extends View{
 		Point p = satValToPoint(mSat, mVal);
 			
 		mSatValTrackerPaint.setColor(0xff000000);
-		canvas.drawCircle(p.x, p.y, PALETTE_CIRCLE_TRACKER_RADIUS - 1f * mDensity, mSatValTrackerPaint);
+		canvas.drawCircle(p.x, p.y, PALETTE_CIRCLE_TRACKER_RADIUS - mDensity, mSatValTrackerPaint);
 				
 		mSatValTrackerPaint.setColor(0xffdddddd);
 		canvas.drawCircle(p.x, p.y, PALETTE_CIRCLE_TRACKER_RADIUS, mSatValTrackerPaint);
@@ -864,9 +864,9 @@ public class ColorPickerView extends View{
 		mValShader = null;
 		mSatShader = null;
 		mHueShader = null;
-		mAlphaShader = null;;
-		
-		setUpSatValRect();
+		mAlphaShader = null;
+
+        setUpSatValRect();
 		setUpHueRect();
 		setUpAlphaRect();
 	}
@@ -1005,9 +1005,9 @@ public class ColorPickerView extends View{
 			mValShader = null;
 			mSatShader = null;
 			mHueShader = null;
-			mAlphaShader = null;;
-			
-			requestLayout();
+			mAlphaShader = null;
+
+            requestLayout();
 		}
 		
 	}

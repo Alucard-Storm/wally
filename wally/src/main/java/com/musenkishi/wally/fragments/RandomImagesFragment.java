@@ -129,8 +129,8 @@ public class RandomImagesFragment extends BaseFilterFragment implements
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_main_swiperefresh, container, false);
         if (rootView != null) {
             super.onCreateView(rootView);
-            gridView = (AutoGridView) rootView.findViewById(R.id.listview);
-            swipeClearLayout = (SwipeClearLayout) rootView.findViewById(R.id.swipe_container);
+            gridView = rootView.findViewById(R.id.listview);
+            swipeClearLayout = rootView.findViewById(R.id.swipe_container);
             swipeClearLayout.setOnRefreshListener(this);
             swipeClearLayout.setOnSwipeListener(this);
             swipeClearLayout.setCircleColor(getAppBarColor());
@@ -410,21 +410,20 @@ public class RandomImagesFragment extends BaseFilterFragment implements
         imagesAdapter.setOnItemClickListener(new RecyclerImagesAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Image image = (Image) imagesAdapter.getItem(position);
+                Image image = imagesAdapter.getItem(position);
                 Intent intent = new Intent(Intent.ACTION_VIEW,
                         Uri.parse(image.imagePageURL()),
                         view.getContext(),
                         ImageDetailsActivity.class);
 
-                ImageView thumbnailImageView = (ImageView) view.findViewById(R.id.thumb_image_view);
+                ImageView thumbnailImageView = view.findViewById(R.id.thumb_image_view);
 
                 Bitmap thumb = null;
 
                 intent.putExtra(ImageDetailsActivity.INTENT_EXTRA_IMAGE, image);
 
                 if (thumbnailImageView != null && thumbnailImageView.getDrawable() != null
-                        && thumbnailImageView.getDrawable() instanceof BitmapDrawable) {
-                    BitmapDrawable glideBitmapDrawable = (BitmapDrawable) thumbnailImageView.getDrawable();
+                        && thumbnailImageView.getDrawable() instanceof BitmapDrawable glideBitmapDrawable) {
                     thumb = glideBitmapDrawable.getBitmap();
                 } else if (thumbnailImageView != null && thumbnailImageView.getDrawable() != null
                         && thumbnailImageView.getDrawable() instanceof TransitionDrawable) {

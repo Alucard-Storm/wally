@@ -169,7 +169,7 @@ public class SearchFragment extends GridFragment implements
             super.onCreateView(rootView);
             quickReturnBackground = rootView.findViewById(R.id.quick_return_protective_background);
             quickReturnView = rootView.findViewById(R.id.quick_return_view);
-            quickReturnEditTextClearButton = (ImageButton) rootView.findViewById(R.id.quick_return_edittext_clear);
+            quickReturnEditTextClearButton = rootView.findViewById(R.id.quick_return_edittext_clear);
             quickReturnEditTextClearButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -181,7 +181,7 @@ public class SearchFragment extends GridFragment implements
                     }
                 }
             });
-            quickReturnEditText = (EditText) rootView.findViewById(R.id.quick_return_edittext);
+            quickReturnEditText = rootView.findViewById(R.id.quick_return_edittext);
             quickReturnEditText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -255,14 +255,14 @@ public class SearchFragment extends GridFragment implements
             });
 
             colorTagCard = rootView.findViewById(R.id.search_color_card);
-            colorTagTextView = (TextView) rootView.findViewById(R.id.search_color_textview);
+            colorTagTextView = rootView.findViewById(R.id.search_color_textview);
             colorTagTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     showColorPickerDialog();
                 }
             });
-            colorTagClearButton = (ImageButton) rootView.findViewById(R.id.search_color_button_clear);
+            colorTagClearButton = rootView.findViewById(R.id.search_color_button_clear);
             colorTagClearButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -734,21 +734,20 @@ public class SearchFragment extends GridFragment implements
         imagesAdapter.setOnItemClickListener(new RecyclerImagesAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Image image = (Image) imagesAdapter.getItem(position);
+                Image image = imagesAdapter.getItem(position);
                 Intent intent = new Intent(Intent.ACTION_VIEW,
                         Uri.parse(image.imagePageURL()),
                         view.getContext(),
                         ImageDetailsActivity.class);
 
-                ImageView thumbnailImageView = (ImageView) view.findViewById(R.id.thumb_image_view);
+                ImageView thumbnailImageView = view.findViewById(R.id.thumb_image_view);
 
                 Bitmap thumb = null;
 
                 intent.putExtra(ImageDetailsActivity.INTENT_EXTRA_IMAGE, image);
 
                 if (thumbnailImageView != null && thumbnailImageView.getDrawable() != null
-                        && thumbnailImageView.getDrawable() instanceof BitmapDrawable) {
-                    BitmapDrawable glideBitmapDrawable = (BitmapDrawable) thumbnailImageView.getDrawable();
+                        && thumbnailImageView.getDrawable() instanceof BitmapDrawable glideBitmapDrawable) {
                     thumb = glideBitmapDrawable.getBitmap();
                 } else if (thumbnailImageView != null && thumbnailImageView.getDrawable() != null
                         && thumbnailImageView.getDrawable() instanceof TransitionDrawable) {

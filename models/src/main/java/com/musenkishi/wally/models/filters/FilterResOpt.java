@@ -63,14 +63,10 @@ public class FilterResOpt {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof FilterResOpt)) return false;
-
-        FilterResOpt that = (FilterResOpt) o;
+        if (!(o instanceof FilterResOpt that)) return false;
 
         if (atLeast != that.atLeast) return false;
-        if (exactly != that.exactly) return false;
-
-        return true;
+        return exactly == that.exactly;
     }
 
     @Override

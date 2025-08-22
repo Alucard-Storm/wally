@@ -71,7 +71,7 @@ public class FilterDialogFragment extends MaterialDialogFragment {
     private int numberOfRetriesOnCategory = 0;
     private int numberOfRetriesOnRating = 0;
 
-    private CompoundButton.OnCheckedChangeListener categoryCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+    private final CompoundButton.OnCheckedChangeListener categoryCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
             if (!hasAtLeastOneCategoryChecked()){
@@ -90,7 +90,7 @@ public class FilterDialogFragment extends MaterialDialogFragment {
         }
     };
 
-    private CompoundButton.OnCheckedChangeListener ratingCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+    private final CompoundButton.OnCheckedChangeListener ratingCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
             if (!hasAtLeastOneRatingChecked()){
@@ -129,15 +129,15 @@ public class FilterDialogFragment extends MaterialDialogFragment {
             setContentView(R.layout.dialog_content_filter);
             final Dialog dialog = super.onCreateDialog(savedInstanceState);
 
-            checkBoxBoardGeneral = (CheckBox) dialog.findViewById(R.id.filter_boards_general);
-            checkBoxBoardAnime = (CheckBox) dialog.findViewById(R.id.filter_boards_anime);
-            checkBoxBoardPeople = (CheckBox) dialog.findViewById(R.id.filter_boards_high_resolution);
-            checkBoxPuritySFW = (CheckBox) dialog.findViewById(R.id.filter_purity_sfw);
-            checkBoxPuritySketchy = (CheckBox) dialog.findViewById(R.id.filter_purity_sketchy);
-            checkBoxPurityNSFW = (CheckBox) dialog.findViewById(R.id.filter_purity_nsfw);
-            spinnerAspectRatio = (Spinner) dialog.findViewById(R.id.filter_aspect_ratio_spinner);
-            spinnerResolution = (Spinner) dialog.findViewById(R.id.filter_resolution_spinner);
-            apiKeyInput = (EditText) dialog.findViewById(R.id.filter_api_key_input);
+            checkBoxBoardGeneral = dialog.findViewById(R.id.filter_boards_general);
+            checkBoxBoardAnime = dialog.findViewById(R.id.filter_boards_anime);
+            checkBoxBoardPeople = dialog.findViewById(R.id.filter_boards_high_resolution);
+            checkBoxPuritySFW = dialog.findViewById(R.id.filter_purity_sfw);
+            checkBoxPuritySketchy = dialog.findViewById(R.id.filter_purity_sketchy);
+            checkBoxPurityNSFW = dialog.findViewById(R.id.filter_purity_nsfw);
+            spinnerAspectRatio = dialog.findViewById(R.id.filter_aspect_ratio_spinner);
+            spinnerResolution = dialog.findViewById(R.id.filter_resolution_spinner);
+            apiKeyInput = dialog.findViewById(R.id.filter_api_key_input);
             apiKeyLayout = dialog.findViewById(R.id.filter_layout_api_key);
 
             int[] titleIds = new int[]{
@@ -164,7 +164,7 @@ public class FilterDialogFragment extends MaterialDialogFragment {
 
     private void colorizeTextViews(int[] resourceIds, Dialog dialog) {
         for (int id : resourceIds) {
-            TextView textView = (TextView) dialog.findViewById(id);
+            TextView textView = dialog.findViewById(id);
             textView.setTextColor(getPrimaryColor());
         }
     }

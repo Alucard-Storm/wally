@@ -40,7 +40,7 @@ android {
 	compileSdkVersion 36
 	namespace "com.musenkishi.wally"
 
-	def Properties versionProps = new Properties()
+    Properties versionProps = new Properties()
 	versionProps.load(new FileInputStream(file('version.properties')))
 	defaultConfig {
 		applicationId "com.musenkishi.wally"

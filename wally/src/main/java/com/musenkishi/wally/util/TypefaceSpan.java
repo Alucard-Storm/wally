@@ -30,7 +30,7 @@ import android.util.LruCache;
  */
 public class TypefaceSpan extends MetricAffectingSpan {
 
-    private static LruCache<String, Typeface> typefaceCache =
+    private static final LruCache<String, Typeface> typefaceCache =
             new LruCache<String, Typeface>(12);
 
     private Typeface typeface;

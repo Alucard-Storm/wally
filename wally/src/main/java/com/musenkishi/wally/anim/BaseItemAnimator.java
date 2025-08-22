@@ -42,12 +42,12 @@ public abstract class BaseItemAnimator extends SimpleItemAnimator {
         mRecyclerView = recyclerView;
     }
 
-    private ArrayList<RecyclerView.ViewHolder> mPendingRemovals = new ArrayList<RecyclerView.ViewHolder>();
-    private ArrayList<RecyclerView.ViewHolder> mPendingAdditions = new ArrayList<RecyclerView.ViewHolder>();
-    private ArrayList<MoveInfo> mPendingMoves = new ArrayList<MoveInfo>();
+    private final ArrayList<RecyclerView.ViewHolder> mPendingRemovals = new ArrayList<RecyclerView.ViewHolder>();
+    private final ArrayList<RecyclerView.ViewHolder> mPendingAdditions = new ArrayList<RecyclerView.ViewHolder>();
+    private final ArrayList<MoveInfo> mPendingMoves = new ArrayList<MoveInfo>();
 
-    private ArrayList<RecyclerView.ViewHolder> mAdditions = new ArrayList<RecyclerView.ViewHolder>();
-    private ArrayList<MoveInfo> mMoves = new ArrayList<MoveInfo>();
+    private final ArrayList<RecyclerView.ViewHolder> mAdditions = new ArrayList<RecyclerView.ViewHolder>();
+    private final ArrayList<MoveInfo> mMoves = new ArrayList<MoveInfo>();
 
     protected ArrayList<RecyclerView.ViewHolder> mAddAnimations = new ArrayList<RecyclerView.ViewHolder>();
     protected ArrayList<RecyclerView.ViewHolder> mMoveAnimations = new ArrayList<RecyclerView.ViewHolder>();
@@ -332,5 +332,4 @@ public abstract class BaseItemAnimator extends SimpleItemAnimator {
         }
     }
 
-    ;
 }

@@ -63,8 +63,8 @@ public class CustomResolutionDialogFragment extends MaterialDialogFragment imple
             setCancelable(false);
             final Dialog dialog = super.onCreateDialog(savedInstanceState);
 
-            editTextWidth = (FloatLabeledEditText) dialog.findViewById(R.id.custom_res_width);
-            editTextHeight = (FloatLabeledEditText) dialog.findViewById(R.id.custom_res_height);
+            editTextWidth = dialog.findViewById(R.id.custom_res_width);
+            editTextHeight = dialog.findViewById(R.id.custom_res_height);
 
             uiHandler.sendEmptyMessage(SET_PREFILLED_RESOLUTION);
 

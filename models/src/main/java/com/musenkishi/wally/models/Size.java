@@ -48,14 +48,10 @@ public class Size {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Size)) return false;
-
-        Size size = (Size) o;
+        if (!(o instanceof Size size)) return false;
 
         if (height != size.height) return false;
-        if (width != size.width) return false;
-
-        return true;
+        return width == size.width;
     }
 
     @Override

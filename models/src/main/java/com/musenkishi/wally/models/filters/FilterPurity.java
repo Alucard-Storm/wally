@@ -85,15 +85,11 @@ public class FilterPurity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof FilterPurity)) return false;
-
-        FilterPurity that = (FilterPurity) o;
+        if (!(o instanceof FilterPurity that)) return false;
 
         if (sketchyChecked != that.sketchyChecked) return false;
         if (sfwChecked != that.sfwChecked) return false;
-        if (nsfwChecked != that.nsfwChecked) return false;
-
-        return true;
+        return nsfwChecked == that.nsfwChecked;
     }
 
     @Override

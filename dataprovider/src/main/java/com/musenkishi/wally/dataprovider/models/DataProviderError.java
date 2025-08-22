@@ -24,10 +24,10 @@ public class DataProviderError {
 
     public enum Type { NETWORK, LOCAL }
 
-    private Type type;
-    private int httpStatusCode;
+    private final Type type;
+    private final int httpStatusCode;
 
-    private String message;
+    private final String message;
 
     public DataProviderError(Type mType, int httpStatusCode, String message) {
         this.type = mType;
