@@ -385,6 +385,11 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         Display d = win.getDefaultDisplay();
         int displayWidth = d.getWidth(); // Width of the actual device
 
+        // Handle invalid dimensions to prevent divide by zero
+        if (width <= 0 || height <= 0) {
+            return new Size(displayWidth, displayWidth); // 1:1 ratio as fallback
+        }
+
         int fittedHeight = height;
         int fittedWidth = width;
 
