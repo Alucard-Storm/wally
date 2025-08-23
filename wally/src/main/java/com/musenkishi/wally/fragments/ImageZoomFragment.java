@@ -34,11 +34,14 @@ import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import java.io.File;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -426,16 +429,29 @@ public class ImageZoomFragment extends DialogFragment {
     }
 
     private void setImageAsWallpaperPicker(Uri fileUri) {
-        Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
-        intent.setType("image/*");
+        try {
+            Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
+            intent.setType("image/*");
 
-        MimeTypeMap map = MimeTypeMap.getSingleton();
-        String mimeType = map.getMimeTypeFromExtension("png");
-        intent.setDataAndType(fileUri, mimeType);
-        intent.putExtra("mimeType", mimeType);
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            MimeTypeMap map = MimeTypeMap.getSingleton();
+            String mimeType = map.getMimeTypeFromExtension("png");
 
-        startActivity(Intent.createChooser(intent, getString(R.string.action_set_as)));
+            // Convert file:// URI to content:// URI using FileProvider
+            Uri contentUri = androidx.core.content.FileProvider.getUriForFile(
+                    requireContext(),
+                    requireContext().getPackageName() + ".provider",
+                    new File(fileUri.getPath())
+            );
+
+            intent.setDataAndType(contentUri, mimeType);
+            intent.putExtra("mimeType", mimeType);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            startActivity(Intent.createChooser(intent, getString(R.string.action_set_as)));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Error setting wallpaper: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void delete(Uri contentUri) {
