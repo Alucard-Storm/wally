@@ -40,7 +40,9 @@ Thanks
 
 Author
 ------
-Freddie Lust-Hed - @musenkishi
+- Freddie Lust-Hed - @musenkishi
+- Alucard Stormbringer - @Alucard-Storm
+
 
 Disclaimer
 ---------
