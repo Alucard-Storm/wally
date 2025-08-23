@@ -22,8 +22,12 @@ import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.data.DataFetcher;
 import com.bumptech.glide.load.model.GlideUrl;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
+import com.bumptech.glide.util.ContentLengthInputStream;
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,8 +38,9 @@ import java.io.InputStream;
 public class OkHttpStreamFetcher implements DataFetcher<InputStream> {
     private final OkHttpClient client;
     private final GlideUrl url;
-    private volatile Request request;
     private InputStream stream;
+    private ResponseBody responseBody;
+    private Call call;
 
     public OkHttpStreamFetcher(OkHttpClient client, GlideUrl url) {
         this.client = client;
@@ -44,31 +49,50 @@ public class OkHttpStreamFetcher implements DataFetcher<InputStream> {
 
     @Override
     public void loadData(@NonNull Priority priority, @NonNull DataCallback<? super InputStream> callback) {
-        request = new Request.Builder()
-                .url(url.toString())
-                .build();
-
-        try {
-            stream = client.newCall(request)
-                    .execute()
-                    .body()
-                    .byteStream();
-
-            callback.onDataReady(stream);
-        } catch (IOException e) {
-            callback.onLoadFailed(e);
+        Request.Builder requestBuilder = new Request.Builder().url(url.toStringUrl());
+        for (String headerName : url.getHeaders().keySet()) {
+            String headerValue = url.getHeaders().get(headerName);
+            requestBuilder.addHeader(headerName, headerValue);
         }
+        Request request = requestBuilder.build();
+        call = client.newCall(request);
+        call.enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onLoadFailed(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                responseBody = response.body();
+                if (!response.isSuccessful() || responseBody == null) {
+                    callback.onLoadFailed(new IOException("Request failed with code: " + response.code()));
+                    return;
+                }
+                stream = ContentLengthInputStream.obtain(responseBody.byteStream(), responseBody.contentLength());
+                callback.onDataReady(stream);
+            }
+        });
     }
 
     @Override
     public void cleanup() {
-        if (stream == null) {
-            return;
-        }
         try {
-            stream.close();
+            if (stream != null) {
+                stream.close();
+            }
+            if (responseBody != null) {
+                responseBody.close();
+            }
         } catch (IOException e) {
             // Ignored
+        }
+    }
+
+    @Override
+    public void cancel() {
+        if (call != null) {
+            call.cancel();
         }
     }
 
@@ -82,12 +106,5 @@ public class OkHttpStreamFetcher implements DataFetcher<InputStream> {
     @Override
     public DataSource getDataSource() {
         return DataSource.REMOTE;
-    }
-
-    @Override
-    public void cancel() {
-        if (request != null) {
-            client.cancel(request);
-        }
     }
 }

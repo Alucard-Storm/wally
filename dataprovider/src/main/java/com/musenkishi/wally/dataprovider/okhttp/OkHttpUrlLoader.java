@@ -24,7 +24,7 @@ import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.ModelLoader;
 import com.bumptech.glide.load.model.ModelLoaderFactory;
 import com.bumptech.glide.load.model.MultiModelLoaderFactory;
-import com.squareup.okhttp.OkHttpClient;
+import okhttp3.OkHttpClient;
 
 import java.io.InputStream;
 

@@ -36,7 +36,7 @@ import com.musenkishi.wally.models.filters.FilterPurityKeys;
 import com.musenkishi.wally.models.filters.FilterResOptKeys;
 import com.musenkishi.wally.models.filters.FilterResolutionKeys;
 import com.musenkishi.wally.models.filters.FilterTimeSpanKeys;
-import com.squareup.okhttp.OkHttpClient;
+import okhttp3.OkHttpClient;
 
 import java.io.InputStream;
 import java.util.HashMap;

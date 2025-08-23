@@ -24,9 +24,9 @@ import com.musenkishi.wally.models.filters.FilterBoardsKeys;
 import com.musenkishi.wally.models.filters.FilterGroupsStructure;
 import com.musenkishi.wally.models.filters.FilterPurityKeys;
 import com.musenkishi.wally.models.filters.FilterResolutionKeys;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -135,9 +135,10 @@ public class NetworkDataProvider {
 
     public String getDataSync(String url, String apiKey){
         try {
-            OkHttpClient client = new OkHttpClient();
-            client.setConnectTimeout(10, TimeUnit.SECONDS);
-            client.setReadTimeout(10, TimeUnit.SECONDS);
+            OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
 
             Request.Builder requestBuilder = new Request.Builder()
                     .url(url);
@@ -147,12 +148,16 @@ public class NetworkDataProvider {
             }
 
             Request request = requestBuilder.build();
-            Response response = client.newCall(request).execute();
-            return response.body().string();
-        } catch (MalformedURLException e) {
+            try (Response response = client.newCall(request).execute()) {
+                if (response.body() != null) {
+                    return response.body().string();
+                }
+                return null;
+            }
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
-        } catch (IOException e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
             return null;
         }
@@ -182,10 +187,10 @@ public class NetworkDataProvider {
 
     public void getData(String url, String apiKey, final OnDataReceivedListener onDataReceivedListener) {
         try {
-            OkHttpClient client = new OkHttpClient();
-
-            client.setConnectTimeout(10, TimeUnit.SECONDS);
-            client.setReadTimeout(10, TimeUnit.SECONDS);
+            OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
 
             Request.Builder requestBuilder = new Request.Builder()
                     .url(url);
@@ -195,25 +200,39 @@ public class NetworkDataProvider {
             }
 
             Request request = requestBuilder.build();
-            Response response = client.newCall(request).execute();
-            if (onDataReceivedListener != null) {
-                onDataReceivedListener.onData(response.body().string(), url);
-            }
-        } catch (MalformedURLException e) {
+            client.newCall(request).enqueue(new okhttp3.Callback() {
+                @Override
+                public void onFailure(okhttp3.Call call, IOException e) {
+                    if (onDataReceivedListener != null) {
+                        DataProviderError dataProviderError = new DataProviderError(
+                                DataProviderError.Type.NETWORK,
+                                400,
+                                e.getMessage());
+                        onDataReceivedListener.onError(dataProviderError);
+                    }
+                }
+
+                @Override
+                public void onResponse(okhttp3.Call call, Response response) throws IOException {
+                    if (onDataReceivedListener != null) {
+                        if (response.body() != null) {
+                            onDataReceivedListener.onData(response.body().string(), url);
+                        } else {
+                            DataProviderError dataProviderError = new DataProviderError(
+                                    DataProviderError.Type.NETWORK,
+                                    response.code(),
+                                    "Empty response body");
+                            onDataReceivedListener.onError(dataProviderError);
+                        }
+                    }
+                }
+            });
+        } catch (IllegalArgumentException e) {
             if (onDataReceivedListener != null) {
                 DataProviderError dataProviderError = new DataProviderError(
                         DataProviderError.Type.NETWORK,
                         400,
-                        "MalformedURLException");
-                onDataReceivedListener.onError(dataProviderError);
-            }
-            e.printStackTrace();
-        } catch (IOException e) {
-            if (onDataReceivedListener != null) {
-                DataProviderError dataProviderError = new DataProviderError(
-                        DataProviderError.Type.NETWORK,
-                        400,
-                        "IOException");
+                        "Invalid URL format");
                 onDataReceivedListener.onError(dataProviderError);
             }
             e.printStackTrace();
