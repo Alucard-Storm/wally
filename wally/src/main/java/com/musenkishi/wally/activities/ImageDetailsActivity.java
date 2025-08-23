@@ -38,7 +38,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
+import android.transition.Transition;
+
+import com.musenkishi.wally.transition.ImageTransition;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -143,22 +147,42 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Enable activity transitions
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            requestWindowFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
+            
+            Transition transition = new android.transition.ChangeBounds();
+            transition.setDuration(300);
+            
+            getWindow().setSharedElementEnterTransition(transition);
+            getWindow().setSharedElementExitTransition(transition);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        }
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_details);
 
         setToolbar(findViewById(R.id.toolbar));
 
         if (getToolbar() != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(Color.TRANSPARENT);
-                getWindow().getDecorView().setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 getToolbar().setPadding(0, getStatusBarHeight(), 0, 0);
             }
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("");
+            
+            // Animate toolbar entrance
+            getToolbar().setTranslationY(-getToolbar().getHeight());
+            getToolbar().setAlpha(0f);
+            getToolbar().animate()
+                .translationY(0)
+                .alpha(1f)
+                .setDuration(500)
+                .setStartDelay(300)
+                .setInterpolator(new EaseInOutBezierInterpolator())
+                .start();
         }
 
         final Intent intent = getIntent();

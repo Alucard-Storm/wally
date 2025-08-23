@@ -54,6 +54,12 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Enable activity transitions
+        getWindow().requestFeature(android.view.Window.FEATURE_ACTIVITY_TRANSITIONS);
+        getWindow().setExitTransition(new android.transition.Explode());
+        getWindow().setEnterTransition(new android.transition.Explode());
+        
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -63,6 +69,15 @@ public class MainActivity extends BaseActivity {
             getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
             getSupportActionBar().setCustomView(R.layout.tab_bar);
             tabBarView = (TabBarView) getSupportActionBar().getCustomView();
+            
+            // Add entrance animation to toolbar
+            toolbar.setTranslationY(-toolbar.getHeight());
+            toolbar.animate()
+                .translationY(0)
+                .setDuration(500)
+                .setStartDelay(300)
+                .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                .start();
         }
 
         fileReceiver = new FileReceiver();
@@ -79,6 +94,20 @@ public class MainActivity extends BaseActivity {
                 if (tabBarView != null) {
                     tabBarView.setOffset(positionOffset);
                     tabBarView.setSelectedTab(position);
+                    
+                    // Add page transition animation
+                    View currentPage = viewPager.getChildAt(position);
+                    View nextPage = viewPager.getChildAt(position + 1);
+                    if (currentPage != null) {
+                        currentPage.setTranslationX(-positionOffsetPixels * 0.5f);
+                        currentPage.setScaleX(1 - positionOffset * 0.05f);
+                        currentPage.setScaleY(1 - positionOffset * 0.05f);
+                    }
+                    if (nextPage != null) {
+                        nextPage.setTranslationX(viewPager.getWidth() - positionOffsetPixels);
+                        nextPage.setScaleX(0.95f + positionOffset * 0.05f);
+                        nextPage.setScaleY(0.95f + positionOffset * 0.05f);
+                    }
                 }
             }
 
